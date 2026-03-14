@@ -1,0 +1,1398 @@
+{
+  "info": {
+    "_postman_id": "3a3b6a37-0517-45a4-b289-0d194c645688",
+    "name": "SP Vay DN",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "37903354",
+    "_collection_link": "https://go.postman.co/collection/39734536-3a3b6a37-0517-45a4-b289-0d194c645688?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "tạo hồ sơ",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ2YW5oYW5odGVzdCIsImlhdCI6MTc3MDcwNDExNiwiZXhwIjoxNzcwNzkwNTE2fQ.CHY-UYXTgmYeuA7aFpRg4GzHGq254qi1Sqa8vdoVv1xADFBDMcmt4zbzv0DsIZKcX_hnJUzUjY3ebqyn9oqfWQ",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"bnFullName\": \"Nguyễn Ngọc Nhì\",\r\n    \"bnGender\": 1,\r\n    \"bnMobile\": \"0369874470\",\r\n    \"bnDob\": \"15/10/2000\",\r\n    \"bnIdNumber\": \"036987440071\",\r\n    \"bnIdDate\": \"15/10/2024\",\r\n    \"bnIdPlace\": \"ccs QLHC & TTXH\",\r\n    \"bnLoanStatusFiny\": \"1\",\r\n    \"bnMaritalStatus\": \"2\",\r\n    \"bnProvinceId\": 97,\r\n    // \"bnDistrictId\": null,\r\n    \"bnWardId\": 32249,\r\n    \"bnCurrentAddress\": \"số 9\",\r\n    \"bnResidenceProvinceId\": 97,\r\n    // \"bnResidenceDistrictId\": null,\r\n    \"bnResidenceWardId\": 32249,\r\n    \"bnResidenceAddress\": \"số 5\",\r\n    \"businessShareholder\": [\r\n        {\r\n            \"shFullName\": \"Hồ Thị Mai Trang\",\r\n            \"shGender\": 1,\r\n            \"shMobile\": \"0369875362\",\r\n            \"shDob\": \"15/10/2000\",\r\n            \"shIdNumber\": \"036987521063\",\r\n            \"shIdDate\": \"10/10/2024\",\r\n            \"shIdPlace\": \"ccs QLHC & TTXH\",\r\n            \"shLoanStatusFiny\": 1,\r\n            \"shMaritalStatus\": 1,\r\n            \"shProvinceId\": 97,\r\n            \"shDistrictId\": null,\r\n            \"shWardId\": 32249,\r\n            \"shCurrentAddress\": \"số 09 đại kim\",\r\n            \"shResidenceProvinceId\": 97,\r\n            \"shResidenceDistrictId\": null,\r\n            \"shResidenceWardId\": 32249,\r\n            \"shResidenceAddress\": \"số 10 đại kim\",\r\n            \"sameAddress\": true\r\n        }\r\n        // {\r\n        //     \"shFullName\": \"Hồ Thị Trang\",\r\n        //     \"shGender\": 1,\r\n        //     \"shMobile\": \"0969875964\",\r\n        //     \"shDob\": \"15/10/2000\",\r\n        //     \"shIdNumber\": \"096987510065\",\r\n        //     \"shIdDate\": \"10/10/2024\",\r\n        //     \"shIdPlace\": \"ccs QLHC & TTXH\",\r\n        //     \"shLoanStatusFiny\": 1,\r\n        //     \"shMaritalStatus\": 1,\r\n        //     \"shProvinceId\": 97,\r\n        //     \"shDistrictId\": null,\r\n        //     \"shWardId\": 32249,\r\n        //     \"shCurrentAddress\": \"số 12 đại kim\",\r\n        //     \"shResidenceProvinceId\": 97,\r\n        //     \"shResidenceDistrictId\": null,\r\n        //     \"shResidenceWardId\": 32249,\r\n        //     \"shResidenceAddress\": \"số 19 đại kim\",\r\n        //     \"sameAddress\": true\r\n        // }\r\n    ],\r\n    \"businessGuardians\": [\r\n        // {\r\n        //     \"guardName\": \"Vũ Thúy Quỳnh\",\r\n        //     \"guardGender\": 1,\r\n        //     \"guardMobile\": \"0369896266\",\r\n        //     \"guardBirth\": \"12/10/2000\",\r\n        //     \"guardIdNumber\": \"036988620067\",\r\n        //     \"guardIdDate\": \"15/10/2025\",\r\n        //     \"guardIdPlace\": \"cục cảnh sát\",\r\n        //     \"guardMaritalStatus\": 1,\r\n        //     \"guardLoanStatusFiny\": 1,\r\n        //     \"guardProvinceId\": 97,\r\n        //     \"guardDistrictId\": null,\r\n        //     \"guardWardId\": 32249,\r\n        //     \"guardCurrentAddress\": \"Căn TT5-1B-25.\",\r\n        //     \"guardResidenceProvinceId\": 97,\r\n        //     \"guardResidenceDistrictId\": null,\r\n        //     \"guardResidenceWardId\": 32249,\r\n        //     \"guardAddress\": \"Căn TT5-1B-25, Khu đô thị mới Đại Kim, P.Đại Kim, Q.Hoàng Mai, Tp.Hà Nội.\"\r\n        // },\r\n        //    {\r\n        //     \"guardName\": \"Vũ Thúy Quyết\",\r\n        //     \"guardGender\": 1,\r\n        //     \"guardMobile\": \"0369784068\",\r\n        //     \"guardBirth\": \"12/10/2000\",\r\n        //     \"guardIdNumber\": \"036978220069\",\r\n        //     \"guardIdDate\": \"15/10/2025\",\r\n        //     \"guardIdPlace\": \"cục cảnh sát\",\r\n        //     \"guardMaritalStatus\": 1,\r\n        //     \"guardLoanStatusFiny\": 1,\r\n        //     \"guardProvinceId\": 97,\r\n        //     \"guardDistrictId\": null,\r\n        //     \"guardWardId\": 32249,\r\n        //     \"guardCurrentAddress\": \"Tp.Hà Nội.\",\r\n        //     \"guardResidenceProvinceId\": 97,\r\n        //     \"guardResidenceDistrictId\": null,\r\n        //     \"guardResidenceWardId\": 32249,\r\n        //     \"guardAddress\": \"Căn TT5-1B-25, Khu đô thị mới Đại Kim, P.Đại Kim, Q.Hoàng Mai, Tp.Hà Nội.\"\r\n        // }\r\n    ],\r\n    \"loanRegistrationExtra\": [\r\n        {\r\n            \"vehicleName\": \"Nguyễn Thị Ánh Viên\",\r\n            \"vehicleType\": \"2\",\r\n            \"vehicleBrand\": \"13\",\r\n            \"vehicleId\": \"2129\",\r\n            \"vehYearManufacture\": 2024,\r\n            \"vehicleOrigin\": \"việt nam\",\r\n            \"addressVehicleDocuments\": \"số 10 ngách 6 ngõ 31 Phan Đình Giót\",\r\n            \"vehicleColor\": \"trắng\",\r\n            \"fuel\": \"xăng\",\r\n            \"numberPeopleAllow\": \"5\",\r\n            \"engineNumber\": \"L3753078063118\",\r\n            \"chassisNumber\": \"LGGG4DY38EL930889\",\r\n            \"registrationNumber\": \"2900027598\",\r\n            \"vehicleNumber\": \"29K-044.93\",\r\n            \"vehicleRegistrationIssued\": \"Công An Xã Phú Cường\",\r\n            \"vehicleRegistrationDate\": \"15/10/2024\",\r\n            \"regSeriNumber\": \"\",\r\n            \"regPeriod\": \"\",\r\n            \"regLoad\": \"\",\r\n            \"vehicleInspectionModelCode\": \"\",\r\n            \"transPor\": \"\",\r\n            \"commercial\": 1,\r\n            \"market\": 1,\r\n            \"sanction\": null,\r\n            \"renovation\": \"\",\r\n            \"vehUseFor\": 1,\r\n            \"vehiclePrice\": null,\r\n            \"loanPrice\": 1033200000,\r\n            \"similarAssets\": [\r\n                {\r\n                    \"assetValue\": \"\",\r\n                    \"assetWebsite\": \"\"\r\n                },\r\n                {\r\n                    \"assetValue\": \"\",\r\n                    \"assetWebsite\": \"\"\r\n                },\r\n                {\r\n                    \"assetValue\": \"\",\r\n                    \"assetWebsite\": \"\"\r\n                }\r\n            ],\r\n            \"bt\": 0,\r\n            \"dbm\": 0,\r\n            \"dkmn\": 0,\r\n            \"rrdn\": 0,\r\n            \"tngt\": 0,\r\n            \"tk\": 0,\r\n            \"bdmm\": 0,\r\n            \"vehRenovation\": 0\r\n        },\r\n        {\r\n            \"vehicleName\": \"Nguyễn Thị Ánh\",\r\n            \"vehicleType\": \"2\",\r\n            \"vehicleBrand\": \"13\",\r\n            \"vehicleId\": \"2129\",\r\n            \"vehYearManufacture\": 2024,\r\n            \"vehicleOrigin\": \"việt nam\",\r\n            \"addressVehicleDocuments\": \"số 10 ngách 6 ngõ 31 Phan Đình Giót\",\r\n            \"vehicleColor\": \"trắng\",\r\n            \"fuel\": \"xăng\",\r\n            \"numberPeopleAllow\": \"5\",\r\n            \"engineNumber\": \"L3753078063119\",\r\n            \"chassisNumber\": \"LGGG4DY38EL930889\",\r\n            \"registrationNumber\": \"2900027598\",\r\n            \"vehicleNumber\": \"29K-044.93\",\r\n            \"vehicleRegistrationIssued\": \"Công An Xã Phú Cường\",\r\n            \"vehicleRegistrationDate\": \"15/10/2024\",\r\n            \"regSeriNumber\": \"\",\r\n            \"regPeriod\": \"\",\r\n            \"regLoad\": \"\",\r\n            \"vehicleInspectionModelCode\": \"\",\r\n            \"transPor\": \"\",\r\n            \"commercial\": 1,\r\n            \"market\": 1,\r\n            \"sanction\": null,\r\n            \"renovation\": \"\",\r\n            \"vehUseFor\": 1,\r\n            \"vehiclePrice\": null,\r\n            \"loanPrice\": 1033200000,\r\n            \"similarAssets\": [\r\n                {\r\n                    \"assetValue\": \"\",\r\n                    \"assetWebsite\": \"\"\r\n                },\r\n                {\r\n                    \"assetValue\": \"\",\r\n                    \"assetWebsite\": \"\"\r\n                },\r\n                {\r\n                    \"assetValue\": \"\",\r\n                    \"assetWebsite\": \"\"\r\n                }\r\n            ],\r\n            \"bt\": 0,\r\n            \"dbm\": 0,\r\n            \"dkmn\": 0,\r\n            \"rrdn\": 0,\r\n            \"tngt\": 0,\r\n            \"tk\": 0,\r\n            \"bdmm\": 0,\r\n            \"vehRenovation\": 0\r\n        }\r\n    ],\r\n    \"loanAmount\": 900000000,\r\n    \"payType\": \"4\",\r\n    \"term\": \"12\",\r\n    \"termType\": \"1\",\r\n    \"purposeUsingLoan\": \"1\",\r\n    \"saleId\": 859,\r\n    \"loanType\": \"21\",\r\n    \"fullName\": \"Công ty TNHH MTP 19\",\r\n    \"idNumber\": \"0369875201084\",\r\n    \"idDate\": \"15/10/2000\",\r\n    \"idPlace\": \"Cục trưởng cục cảnh sát QHHC về TTXH\",\r\n    \"mobile\": \"0369875985\",\r\n    \"website\": \"\",\r\n    \"email\": \"\",\r\n    \"bankAccountNumber\": \"0369874201\",\r\n    \"bankAccountName\": \"Công ty TNHH MAE\",\r\n    \"bankName\": \"14\",\r\n    \"ratio\": 19,\r\n    \"productionAddress\": \"\",\r\n    \"businessYear\": 15,\r\n    \"professionBusiness\": \"gỗ thép\",\r\n    \"numberWorking\": 35,\r\n    \"statusBusiness\": 1,\r\n    \"activeStatus\": \"bình thường\",\r\n    \"businessOption\": 1,\r\n    \"businessProduct\": \"s\",\r\n    \"describeCustomer\": \"s\",\r\n    \"sellAddress\": \"s\",\r\n    \"statusFiny\": 1,\r\n    \"income\": 1800000000,\r\n    \"profit\": 800000000,\r\n    \"provinceId\": 97,\r\n    // \"districtId\": null,\r\n    \"wardId\": 32249,\r\n    \"address\": \"B3105 Chung cư Mipec Riverside\",\r\n    \"residenceProvinceId\": 97,\r\n    // \"residenceDistrictId\": null,\r\n    \"residenceWardId\": 32249,\r\n    \"residenceAddress\": \"B3105 Chung cư Mipec Riverside, Số 2, Long Biên 2\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{url}}/api/v2/create-business",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "v2",
+            "create-business"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "update thông tin DN",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ2YW5oYW5odGVzdCIsImlhdCI6MTc3MDcwNDExNiwiZXhwIjoxNzcwNzkwNTE2fQ.CHY-UYXTgmYeuA7aFpRg4GzHGq254qi1Sqa8vdoVv1xADFBDMcmt4zbzv0DsIZKcX_hnJUzUjY3ebqyn9oqfWQ",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"id\": 9579,\r\n    \"coId\": \"11\",\r\n    \"regId\": 11738,\r\n    \"fullName\": \"Công ty TNHH 9999\",\r\n    \"idNumber\": \"03698752110912\",\r\n    \"idDate\": \"09/02/2024\",\r\n    \"idPlace\": \"Bộ công an\",\r\n    \"mobile\": \"0369875992\",\r\n   \"website\": \"\",\r\n    \"email\": \"\",\r\n    \"bankAccountNumber\": \"00119999999999\",\r\n    \"bankAccountName\": \"Nguyễn Cao Trí\",\r\n    \"bankName\": \"13\",\r\n    \"ratio\": 90,\r\n    \"address\": \"Hnoi/123\",\r\n    \"wardId\": 32250,\r\n    \"districtId\": null,\r\n    \"provinceId\": 97,\r\n    \"residenceAddress\": \"HN\",\r\n    \"residenceProvinceId\": 97,\r\n    \"residenceDistrictId\": null,\r\n    \"residenceWardId\": 32250,\r\n    \"productionAddress\": \"số nhà\",\r\n    \"businessOption\": 1,\r\n    \"businessProduct\": \"tự do\",\r\n    \"professionBusiness\": \"tự do\",\r\n    \"businessYear\": 2025,\r\n    \"numberWorking\": 99,\r\n    \"describeCustomer\": \"Test\",\r\n    \"statusBusiness\": 1,\r\n    \"income\": 10000000,\r\n    \"profit\": 200000000,\r\n    \"sellAddress\": \"Test\",\r\n    \"gender\": \"0\",\r\n    \"idType\": \"1\",\r\n    \"statusFiny\": 1,\r\n    \"activeStatus\": \"Tốt\",\r\n    \"createdDate\": \"12/01/2026\",\r\n    \"status\": \"1\",\r\n    \"loanAmount\": 1000000000,\r\n    \"loanType\": \"20\",\r\n    \"payType\": \"2\",\r\n    \"term\": 9,\r\n    \"termType\": \"1\",\r\n    \"purposeUsingLoan\": \"1\",\r\n    \"vehicleType\": \"1\",\r\n    \"saleId\": \"2\",\r\n    \"coNote\": \"\",\r\n    \"bnFullName\": \"Lô Lô Chải\",\r\n    \"bnGender\": 1,\r\n    \"bnMobile\": \"0989874750\",\r\n    \"bnDob\": \"17/07/1998\",\r\n    \"bnIdNumber\": \"020112012178\",\r\n    \"bnIdDate\": \"22/08/2024\",\r\n    \"bnIdPlace\": \"Bộ công an\",\r\n    \"bnMaritalStatus\": 1,\r\n    \"bnLoanStatusFiny\": 1,\r\n    \"bnCurrentAddress\": \"số 11 Hàng Buồm\",\r\n    \"bnWardId\": 32250,\r\n    \"bnDistrictId\": null,\r\n    \"bnProvinceId\": 97,\r\n    \"bnResidenceAddress\": \"số 11 Hàn\",\r\n    \"bnResidenceWardId\": 32250,\r\n    \"bnResidenceDistrictId\": null,\r\n    \"bnResidenceProvinceId\": 97\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{url}}/api/v2/update-business-where",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "v2",
+            "update-business-where"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "getToken",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"username\" : \"hangntm\",\r\n    \"password\" : \"123456@@\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{url}}/authentication/token",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "authentication",
+            "token"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "danh sách cổ đông",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ2YW5oYW5odGVzdCIsImlhdCI6MTc3MDcwNDExNiwiZXhwIjoxNzcwNzkwNTE2fQ.CHY-UYXTgmYeuA7aFpRg4GzHGq254qi1Sqa8vdoVv1xADFBDMcmt4zbzv0DsIZKcX_hnJUzUjY3ebqyn9oqfWQ",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"regId\" : 11773\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{url}}/api/v2/get-BusinessShareHolder-By-regId",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "v2",
+            "get-BusinessShareHolder-By-regId"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "danh sách người bảo lãnh",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ2YW5oYW5odGVzdCIsImlhdCI6MTc1NzY0NTQ3NiwiZXhwIjoxNzU3NzMxODc2fQ.QDQkCm25Yy_MR_xklYi_QWMahL-R7chbNcSHkc0umi7Mb8ZJ8L9pKe1qkHU2P4V8t9le0_HberQbUV81Ro5iAg",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"regId\" : 7384\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:9100/api/v2/get-BusinessGuardians-By-RegId",
+          "host": [
+            "localhost"
+          ],
+          "port": "9100",
+          "path": [
+            "api",
+            "v2",
+            "get-BusinessGuardians-By-RegId"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "danh sách hồ sơ vay",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJoYW5nbnRtIiwiaWF0IjoxNzcwNzIyNzkxLCJleHAiOjE3NzA4MDkxOTF9.d6GbNd2wPcbkSze7WM1xJrr1DptcqwjPRXH93bKveN54h-l_3Bt0mgU43r3KaoaHrPAzzn9n47ZaIxZNobzUYQ",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \r\n    \"id\": \"8209\"\r\n    // \"loanType\": \"18\"\r\n    // \"mobile\":\"\",\r\n    // \"idNumber\":\"\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{url}}/api/get-list-loan-registration",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "get-list-loan-registration"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "danh sách khoản vay",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJoYW5nbnRtIiwiaWF0IjoxNzcwNzIyNzkxLCJleHAiOjE3NzA4MDkxOTF9.d6GbNd2wPcbkSze7WM1xJrr1DptcqwjPRXH93bKveN54h-l_3Bt0mgU43r3KaoaHrPAzzn9n47ZaIxZNobzUYQ",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"id\": 6984\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{url}}/api/get-loan-list",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "get-loan-list"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "danh sách khoản vay _ V1",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJoYW5nbnRtIiwiaWF0IjoxNzcyNTI3ODQ2LCJleHAiOjE3NzI2MTQyNDZ9.mGncMDXaA9q_EFmyH7kL7ETddGqYyBo1LqM5jFV6peT4XeZBR_jk26CN77AYy78iaPijkJmzG-HFThEY-J0ZUA",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{url}}/api/v1/get-loan-list?page=1&pageSize=100&id&custId&term=9&payType=Add on&fullName=Công ty&lnFromDate=20250801&lnToDate=20251201&crFromDate=20250801&crToDate=20251201&loanAmount=1000000000&mobile=0953224546&idNumber=00012889956&documentNo=test_3010&saleId=&lcClass=B0",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "get-loan-list"
+          ],
+          "query": [
+            {
+              "key": "page",
+              "value": "1"
+            },
+            {
+              "key": "pageSize",
+              "value": "100"
+            },
+            {
+              "key": "id",
+              "value": null
+            },
+            {
+              "key": "custId",
+              "value": null
+            },
+            {
+              "key": "term",
+              "value": "9",
+              "description": "kỳ hạn vay"
+            },
+            {
+              "key": "payType",
+              "value": "Add on",
+              "description": "loại sản phẩm vay"
+            },
+            {
+              "key": "fullName",
+              "value": "Công ty",
+              "description": "tên cá nhân or DN"
+            },
+            {
+              "key": "lnFromDate",
+              "value": "20250801",
+              "description": "ngày bắt đầu giải ngân"
+            },
+            {
+              "key": "lnToDate",
+              "value": "20251201",
+              "description": "ngày kết thúc giải ngân"
+            },
+            {
+              "key": "crFromDate",
+              "value": "20250801",
+              "description": "ngày bắt đầu tạo hồ sơ"
+            },
+            {
+              "key": "crToDate",
+              "value": "20251201",
+              "description": "ngày kết thúc tạo hồ sơ"
+            },
+            {
+              "key": "loanAmount",
+              "value": "1000000000",
+              "description": "số tiền giải ngân"
+            },
+            {
+              "key": "mobile",
+              "value": "0953224546",
+              "description": "số điện thoại"
+            },
+            {
+              "key": "idNumber",
+              "value": "00012889956",
+              "description": "số giấy tờ"
+            },
+            {
+              "key": "documentNo",
+              "value": "test_3010",
+              "description": "số hợp đồng"
+            },
+            {
+              "key": "saleId",
+              "value": "",
+              "description": "id sale"
+            },
+            {
+              "key": "lcClass",
+              "value": "B0",
+              "description": "nhóm nợ",
+              "type": "text"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "tình trạng xe cá nhân",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJoYW5nbnRtIiwiaWF0IjoxNzcwNzc0Njk4LCJleHAiOjE3NzA4NjEwOTh9.6kFuHHx2YPhqn_WeBd3Bkl-pjTUxrjQtyuTTA1Z5Fama5gPGNPz5__keB6eAJLsFOWWheQ9vrzC-1S_hgu1Z7A",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \r\n    \"id\" : 5666\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{url}}/api/get-Covehicle-regId",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "get-Covehicle-regId"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "tình trạng xe DN",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJoYW5nbnRtIiwiaWF0IjoxNzcwNzc2NTM0LCJleHAiOjE3NzA4NjI5MzR9.T6VcB-GUZUi3Orwen0oUfyiIenk434V6giP_ZUCoaAh_f1k2rNpP9izKzkgpXCgKOY5PNBS13DwmzSBjArWFYw",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"regId\" : 1\r\n}\r\n    ",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{url}}/api/v2/get-BusinessCovehicle-By-RegId",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "v2",
+            "get-BusinessCovehicle-By-RegId"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "update người bảo lãnh",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ2YW5oYW5odGVzdCIsImlhdCI6MTc3MDcwNDExNiwiZXhwIjoxNzcwNzkwNTE2fQ.CHY-UYXTgmYeuA7aFpRg4GzHGq254qi1Sqa8vdoVv1xADFBDMcmt4zbzv0DsIZKcX_hnJUzUjY3ebqyn9oqfWQ",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"id\": 209797, // id guardians\r\n    \"guardName\": \"Nguyễn An Bìnhhh\",\r\n    \"guardBirth\": \"09/09/1991\",\r\n    \"guardMobile\": \"0367663812\",\r\n    \"guardMaritalStatus\": 1,\r\n    \"guardIdNumber\": \"100010009076\",\r\n    \"guardIdDate\": \"09/09/2020\",\r\n    \"guardIdAddress\": \"HN\",\r\n    \"guardIdPlace\": \"HN\",\r\n    \"guardAddress\": \"30, Hồng Phong, Thanh Miện, Hải Dương\",\r\n    \"guardCurrentAddress\": \"456, Tam Thanh, Tân Sơn, Phú Thọ\",\r\n    \"guardStatusAddress\": \"\",\r\n    \"guardIsFieldWork\": \"\",\r\n    \"guardRelationship\": \"\",\r\n    \"guardResidenceWardId\": 32249,\r\n    // \"guardResidenceDistrictId\": 24,\r\n    \"guardResidenceProvinceId\": 97,\r\n    \"guardWardId\": 32249,\r\n    // \"guardDistrictId\": 24,\r\n    \"guardProvinceId\": 97,\r\n    \"guardLoanStatusFiny\": 1,\r\n    \"guardGender\": 1\r\n}\r\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{url}}/api/v2/update-guardians",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "v2",
+            "update-guardians"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "danh sách hồ sơ vay _ V1",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJoYW5nbnRtIiwiaWF0IjoxNzcyNTk0MjY3LCJleHAiOjE3NzI2ODA2Njd9.LQC-QwDpSC0dp80XTf6Iq2Je_teR4-Z1XdFNJ6YafiXYY_OTO3JfqX-asWetie72WsRPpqoAUDIGK3o7QxHeAQ",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{url}}/api/v1/get-list-loan-registration?page=1&pageSize=100&id=&custId=&status=&saleId=&fullName=&mobile=035&idNumber",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "get-list-loan-registration"
+          ],
+          "query": [
+            {
+              "key": "page",
+              "value": "1"
+            },
+            {
+              "key": "pageSize",
+              "value": "100"
+            },
+            {
+              "key": "id",
+              "value": "",
+              "description": "mã hồ sơ vay"
+            },
+            {
+              "key": "custId",
+              "value": "",
+              "description": "mã khách hàng"
+            },
+            {
+              "key": "status",
+              "value": "",
+              "description": "trạng thái hồ sơ"
+            },
+            {
+              "key": "saleId",
+              "value": "",
+              "description": "mã sale"
+            },
+            {
+              "key": "regFromDate",
+              "value": "20260203",
+              "description": "ngày bắt đầu",
+              "disabled": true
+            },
+            {
+              "key": "regToDate",
+              "value": "20260304",
+              "description": "ngày kết thúc",
+              "disabled": true
+            },
+            {
+              "key": "fullName",
+              "value": "",
+              "description": "tên KH"
+            },
+            {
+              "key": "mobile",
+              "value": "035",
+              "description": "số điện thoại"
+            },
+            {
+              "key": "idNumber",
+              "value": null,
+              "description": "số giấy tờ"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "tạo người bảo lãnh",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJoYW5nbnRtIiwiaWF0IjoxNzcwNzc2NTM0LCJleHAiOjE3NzA4NjI5MzR9.T6VcB-GUZUi3Orwen0oUfyiIenk434V6giP_ZUCoaAh_f1k2rNpP9izKzkgpXCgKOY5PNBS13DwmzSBjArWFYw",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "\r\n    {\r\n    // \"userId\":6826,\r\n    \"regId\":9413,\r\n    \"guardName\": \"Nguyễn Son An\",\r\n    \"guardBirth\": \"07/07/1988\",\r\n    \"guardMobile\": \"0938722211\",\r\n    \"guardMaritalStatus\": \"2\",\r\n    \"guardIdNumber\": \"123101019190\",\r\n    \"guardIdDate\": \"01/01/2020\",\r\n    \"guardIdAddress\": \"HCM\",\r\n    \"guardIdPlace\": \"HCM\",\r\n    \"guardAddress\": \"30, Hồng Phong, Thanh Miện, Hải Dương\",\r\n    \"guardCurrentAddress\": \"456, Tam Thanh, Tân Sơn, Phú Thọ\",\r\n    \"guardStatusAddress\":\"\",\r\n    \"guardIsFieldWork\": \"\",\r\n    \"guardRelationship\":\"\",\r\n    \"guardResidenceWardId\":1,\r\n    \"guardResidenceDistrictId\":1,\r\n    \"guardResidenceProvinceId\":3,\r\n    \"guardWardId\":1,\r\n    \"guardDistrictId\":1,\r\n    \"guardProvinceId\": 3,\r\n    \"guardLoanStatusFiny\":1,\r\n    \"guardGender\": 1\r\n    }\r\n\r\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:9100/api/v2/create-guardians",
+          "host": [
+            "localhost"
+          ],
+          "port": "9100",
+          "path": [
+            "api",
+            "v2",
+            "create-guardians"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "update tài sản",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ2YW5oYW5odGVzdCIsImlhdCI6MTc3MDcwNDExNiwiZXhwIjoxNzcwNzkwNTE2fQ.CHY-UYXTgmYeuA7aFpRg4GzHGq254qi1Sqa8vdoVv1xADFBDMcmt4zbzv0DsIZKcX_hnJUzUjY3ebqyn9oqfWQ",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "\r\n{\r\n    \"loanCarId\": 4213,\r\n    \"vehicleType\": \"1\",\r\n    \"vehicleBrand\": \"1\",\r\n    \"vehicleId\": \"5\",\r\n    \"vehicleName\": \"Công ty TNHH Nguyên Anh MTP\",\r\n    \"vehicleNumber\": \"29K-044.99\",\r\n    \"registrationNumber\": \"2900027598\",\r\n    \"vehYearManufacture\": 2025,\r\n    \"engineNumber\": \"L3753078063118\",\r\n    \"chassisNumber\": \"LGGG4DY38EL930889\",\r\n    \"modelCode\": \"5\",\r\n    \"vehicleOrigin\": \"nhập khẩu\",\r\n    \"addressVehicleDocuments\": \"số 10 ngách 6 ngõ 31 Phan Đình Giót\",\r\n    \"vehicleColor\": \"trắng\",\r\n    \"fuel\": \"diesel\",\r\n    \"numberPeopleAllow\": 5,\r\n    \"vehicleRegistrationIssued\": \"Công An Xã Phú Cường\",\r\n    \"vehicleRegistrationDate\": \"02/05/2024\",\r\n    \"regSeriNumber\": \"\",\r\n    \"regPeriod\": \"\",\r\n    \"regLoad\": \"\",\r\n    \"vehicleInspectionModelCode\": \"5\",\r\n    \"transPor\": 233,\r\n    \"renovation\": \"yes\",\r\n    \"vehUseFor\": 0,\r\n    \"market\": 0,\r\n    \"commercial\": 0,\r\n    \"vehCrack\": 0,\r\n    \"vehScratch\": 0,\r\n    \"vehOthersState\": 1,\r\n    \"bt\": 0,\r\n    \"dbm\": 0,\r\n    \"dkmn\": 0,\r\n    \"rrdn\": 0,\r\n    \"bdmm\": 0,\r\n    \"tngt\": 0,\r\n    \"tk\": 0,\r\n    \"dnnv\": 0,\r\n    \"sanction\": \"0\",\r\n    \"vehRenovation\": 0,\r\n    \"vehiclePrice\": 0,\r\n    \"loanPrice\": 367500000,\r\n    \"similarAssets\": [\r\n        {\r\n            \"id\": 18731,\r\n            \"value\": 1896000000,\r\n            \"linkWebsite\": \"https://test.finy.com.vn\",\r\n            \"destroy\": true\r\n        },\r\n        {\r\n            \"id\": 18732,\r\n            \"value\": 200000000,\r\n            \"linkWebsite\": \"https://test.finy.com.vn\"\r\n        },\r\n        {\r\n            \"id\": null,\r\n            \"value\": 100000000,\r\n            \"linkWebsite\": \"https://test.finy.com.vn\"\r\n        }\r\n    ]\r\n}\r\n\r\n\r\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{url}}/api/v2/update-loanRegistration-extra",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "v2",
+            "update-loanRegistration-extra"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "update trạng thái hồ sơ vay",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ2YW5oYW5odGVzdCIsImlhdCI6MTc2NTg2ODY2MywiZXhwIjoxNzY1OTU1MDYzfQ.NCgx_fqdK34f8jleR_zzVhWQvI6SqqWIdRHlEyzgKR2UgD2gi2YQAItGgJvnDnOJDoDXWAWnXOsHjH5x6NrKGw",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "\r\n   {\r\n    \"id\": 10695,\r\n    \"status\": \"9\"\r\n   }\r\n\r\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{url}}/api/update-loanreg-status",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "update-loanreg-status"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "tạo tài sản",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ2YW5oYW5odGVzdCIsImlhdCI6MTc2MDY4NzI0MiwiZXhwIjoxNzYwNzczNjQyfQ.453FPLzndCIKXWj5wUlBHSAbcplXMhGIh-K6_6BL3lql0TphrDIqcQfJpTpC39mC3FCcGNIgo5UEJCPmhpfR5Q",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "[ // THÔNG TIN TÀI SẢN\r\n        {\r\n            \"loanRegId\": 7286,//ma ho so vay\r\n            \"vehicleName\": \"MECedes\", // -\tTên chủ phương tiện\r\n            \"vehicleType\": \"8\", // -\tLoại phương tiện\r\n            \"vehicleBrand\": \"63\", //-\tNhãn hiệu\r\n            \"modelCode\": 2313, // -\tSố loại\r\n            \"vehYearManufacture\": 2024, // -Năm sản xuất\r\n            \"vehicleOrigin\": \"Việt Nam\", // Nguồn gốc\r\n            \"addressVehicleDocuments\": \"TDP Yên Nội 1, Liên Mạc, Bắc Từ Liêm, Hà Nội\",\r\n            \"vehicleColor\": \"xanh\",\r\n            \"fuel\": \"xăng\",\r\n            \"numberPeopleAllow\": \"2\",\r\n            \"engineNumber\": \"JK03E5254881\",\r\n            \"chassisNumber\": \"RLHJK1212NZ066630\",\r\n            \"vehicleNumber\": \"29BB-027.56\",\r\n            \"registrationNumber\": \"99 000338\",\r\n            \"vehicleRegistrationDate\": \"08/08/2024\",\r\n            \"vehicleRegistrationIssued\": \"Phòng CSGT - CÔNG AN TP HÀ NỘI\",\r\n            \"vehicleId\": \"3453\",\r\n            \"vehUseFor\": 0,\r\n            \"vehCrack\": 0,\r\n            \"vehScratch\": 0,\r\n            \"vehOthersState\": 0,\r\n            \"bt\": 1, // biển tỉnh\r\n            \"dkmn\": 1, // đăng ký mờ nát\r\n            \"dbm\": 0, // đã bổ máy\r\n            \"bdmm\": 0, // biến dạng móp méo\r\n            \"tngt\": 0, // xe tai nạn giao thông\r\n            \"tk\": 0, // xe bị thủy kích\r\n            \"rrdn\": 0, // rò rỉ dầu nhớt, khí ga\r\n            \"dnnv\": 0,\r\n            \"regSeriNumber\": \"3648234\", // số đăng kiểm\r\n            \"regPeriod\": \"05/04/2028\", // thời hạn đăng kiểm\r\n            \"regLoad\": \"2 tấn\", // tải trọng\r\n            \"vehicleInspectionModelCode\": \"3\", // số loại\r\n            \"transPor\": \"234\", // kinh doanh vận tải\r\n            \"renovation\": \"\", // cải tạo\r\n            \"commercial\": 1, // Tính khả mại\r\n            \"market\": 1, // Thông tin trên thị trường\r\n            \"sanction\": \"700000\", //giao thoong chua xu phat\r\n            \"vehRenovation\": 1, ////cải tạo, hoán cải\r\n            \"similarAssets\": [\r\n                {\r\n                    \"value\": \"334\",\r\n                    \"linkWebsite\": \"fsdfs.vn\"\r\n                },\r\n                {\r\n                    \"value\": \"334\",\r\n                    \"linkWebsite\": \"fsdfs.vn\"\r\n                },\r\n                {\r\n                    \"value\": \"334\",\r\n                    \"linkWebsite\": \"fsdfs.vn\"\r\n                }\r\n            ],\r\n            \"vehiclePrice\": \"70000000\" ,// định giá xe của cửa hàng\r\n            \"loanPrice\":750000000//số tiền định giá của finy\r\n        },\r\n        {\r\n            \"loanRegId\": 7286,//ma ho so vay\r\n            \"vehicleName\": \"BMW\", // -\tTên chủ phương tiện\r\n            \"vehicleType\": \"8\", // -\tLoại phương tiện\r\n            \"vehicleBrand\": \"63\", //-\tNhãn hiệu\r\n            \"modelCode\": 1, // -\tSố loại\r\n            \"vehYearManufacture\": 2024, // -Năm sản xuất\r\n            \"vehicleOrigin\": \"Việt Nam\", // Nguồn gốc\r\n            \"addressVehicleDocuments\": \"TDP Yên Nội 1, Liên Mạc, Bắc Từ Liêm, Hà Nội\",\r\n            \"vehicleColor\": \"xanh\",\r\n            \"fuel\": \"xăng\",\r\n            \"numberPeopleAllow\": \"2\",\r\n            \"engineNumber\": \"JK03E5254881\",\r\n            \"chassisNumber\": \"RLHJK1212NZ066630\",\r\n            \"vehicleNumber\": \"29BB-027.42\",\r\n            \"registrationNumber\": \"99 000338\",\r\n            \"vehicleRegistrationDate\": \"08/08/2024\",\r\n            \"vehicleRegistrationIssued\": \"Phòng CSGT - CÔNG AN TP HÀ NỘI\",\r\n            \"vehicleId\": \"3453\",\r\n            \"vehUseFor\": 0,\r\n            \"vehCrack\": 0,\r\n            \"vehScratch\": 0,\r\n            \"vehOthersState\": 0,\r\n            \"bt\": 1, // biển tỉnh\r\n            \"dkmn\": 1, // đăng ký mờ nát\r\n            \"dbm\": 0, // đã bổ máy\r\n            \"bdmm\": 0, // biến dạng móp méo\r\n            \"tngt\": 0, // xe tai nạn giao thông\r\n            \"tk\": 0, // xe bị thủy kích\r\n            \"rrdn\": 0, // rò rỉ dầu nhớt, khí ga\r\n            \"dnnv\": 0,\r\n            \"regSeriNumber\": \"3648234\", // số đăng kiểm\r\n            \"regPeriod\": \"05/04/2028\", // thời hạn đăng kiểm\r\n            \"regLoad\": \"2 tấn\", // tải trọng\r\n            \"vehicleInspectionModelCode\": \"3\", // số loại\r\n            \"transPor\": \"234\", // kinh doanh vận tải\r\n            \"renovation\": \"\", // cải tạo\r\n            \"commercial\": 1, // Tính khả mại\r\n            \"market\": 1, // Thông tin trên thị trường\r\n            \"sanction\": \"700000\", //giao thoong chua xu phat,\r\n            \"vehRenovation\": 1, //cải tạo, hoán cải\r\n            \"similarAssets\": [\r\n                {\r\n                    \"value\": \"114\",\r\n                    \"linkWebsite\": \"fsdfs.vn\"\r\n                },\r\n                {\r\n                    \"value\": \"114\",\r\n                    \"linkWebsite\": \"fsdfs.vn\"\r\n                },\r\n                {\r\n                    \"value\": \"114\",\r\n                    \"linkWebsite\": \"fsdfs.vn\"\r\n                }\r\n            ],\r\n            \"vehiclePrice\": \"80000000\", // định giá xe của cửa hàng\r\n            \"loanPrice\":750000000//số tiền định giá  finy\r\n        }\r\n    ]\r\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:9100/api/v2/create-loan-car",
+          "host": [
+            "localhost"
+          ],
+          "port": "9100",
+          "path": [
+            "api",
+            "v2",
+            "create-loan-car"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "update cổ đông",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ2YW5oYW5odGVzdCIsImlhdCI6MTc3MDcwNDExNiwiZXhwIjoxNzcwNzkwNTE2fQ.CHY-UYXTgmYeuA7aFpRg4GzHGq254qi1Sqa8vdoVv1xADFBDMcmt4zbzv0DsIZKcX_hnJUzUjY3ebqyn9oqfWQ",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "   {\r\n            \"id\":3783,\r\n            \"shFullName\": \"Hồ Thị Mai\",\r\n            \"shGender\": 1,\r\n            \"shMobile\": \"0369875366\",\r\n            \"shDob\": \"15/10/2000\",\r\n            \"shIdNumber\": \"036987521063\",\r\n            \"shIdDate\": \"10/10/2024\",\r\n            \"shIdPlace\": \"ccs QLHC & TTXH\",\r\n            \"shLoanStatusFiny\": 1,\r\n            \"shMaritalStatus\": 1,\r\n            \"shProvinceId\": 97,\r\n            \"shDistrictId\": null,\r\n            \"shWardId\": 32249,\r\n            \"shCurrentAddress\": \"số 09 đại kim\",\r\n            \"shResidenceProvinceId\": 97,\r\n            \"shResidenceDistrictId\": null,\r\n            \"shResidenceWardId\": 32249,\r\n            \"shResidenceAddress\": \"số 10 đại kim\"\r\n           \r\n }\r\n\r\n    \r\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{url}}/api/v2/update-shareholders",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "v2",
+            "update-shareholders"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "tạo cổ đông",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ2YW5oYW5odGVzdCIsImlhdCI6MTc1OTczNzkyMSwiZXhwIjoxNzU5ODI0MzIxfQ.ohYrAhl-J1wNW1gH2L_Fehe6EIQf09Z0wz5ZB8RHQX3TWExgnPlw3k85fHb4nDwoSfuZ-fJ8o9FbnJpUaoxTMQ",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "   [\r\n    {  \r\n    // \"custId\":6826,\r\n    \"shFullName\": \"Lê Hoàng A\",\r\n    \"shGender\": 1,\r\n    \"shMobile\": \"0909106666\",\r\n    \"shDob\":\"06/03/1989\",\r\n    \"shIdNumber\":143543564,\r\n    \"shIdDate\":\"08/05/2025\",\r\n    \"shIdPlace\":\"HCM\",\r\n    \"shResidenceAddress\":\"HCM\",\r\n    \"shResidenceWardId\":1,\r\n    \"shResidenceDistrictId\":1,\r\n    \"shResidenceProvinceId\":3,\r\n    \"shCurrentAddress\": \"HN\",\r\n    \"shWardId\":1,\r\n    \"shDistrictId\":1,\r\n    \"shProvinceId\": 3,\r\n    \"shLoanStatusFiny\":1,\r\n    \"shMaritalStatus\":1,\r\n    \"regId\":7238\r\n }\r\n]\r\n\r\n    \r\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:9100/api/v2/create-shareholder",
+          "host": [
+            "localhost"
+          ],
+          "port": "9100",
+          "path": [
+            "api",
+            "v2",
+            "create-shareholder"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "chi tiết thông tin DN",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ2YW5oYW5odGVzdCIsImlhdCI6MTc3MDcwNDExNiwiZXhwIjoxNzcwNzkwNTE2fQ.CHY-UYXTgmYeuA7aFpRg4GzHGq254qi1Sqa8vdoVv1xADFBDMcmt4zbzv0DsIZKcX_hnJUzUjY3ebqyn9oqfWQ",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"saleId\":\"\",\r\n    \"custId\":\"\",\r\n    \"regId\": 8209\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{url}}/api/v2/get-BusinessWhere",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "v2",
+            "get-BusinessWhere"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Chi tiết khoản vay",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ2YW5oYW5odGVzdCIsImlhdCI6MTc2MTIwNjY2NywiZXhwIjoxNzYxMjkzMDY3fQ.4XmawljoW5ua6yaheMb6H6F4VQ1KEEnva1TYGuMmSWzgJwD8Nln3FwzDtr0QPa7UpB6lGtjjnL7XD4gLFoVang",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n   \"id\": 5344\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:9100/api/get-loan-by-Id",
+          "host": [
+            "localhost"
+          ],
+          "port": "9100",
+          "path": [
+            "api",
+            "get-loan-by-Id"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "danh sách tài sản",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJoYW5nbnRtIiwiaWF0IjoxNzcwNzc2NTM0LCJleHAiOjE3NzA4NjI5MzR9.T6VcB-GUZUi3Orwen0oUfyiIenk434V6giP_ZUCoaAh_f1k2rNpP9izKzkgpXCgKOY5PNBS13DwmzSBjArWFYw",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n     \"loanRegistrationId\" : 8209\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{url}}/api/v2/information-property",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "v2",
+            "information-property"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "phương thức trả nợ",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ2YW5oYW5odGVzdCIsImlhdCI6MTc3MDcwNDExNiwiZXhwIjoxNzcwNzkwNTE2fQ.CHY-UYXTgmYeuA7aFpRg4GzHGq254qi1Sqa8vdoVv1xADFBDMcmt4zbzv0DsIZKcX_hnJUzUjY3ebqyn9oqfWQ",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://apitest.finy.vn/api/get-all-paytypeconf/18",
+          "protocol": "https",
+          "host": [
+            "apitest",
+            "finy",
+            "vn"
+          ],
+          "path": [
+            "api",
+            "get-all-paytypeconf",
+            "18"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "xóa tài sản",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ2YW5oYW5odGVzdCIsImlhdCI6MTc1OTg5ODA1MCwiZXhwIjoxNzU5OTg0NDUwfQ.Nef8RWbHegn7I_VDXW0gfmFjt_K1z_MAPbzOciSragYAj9roiYL41WrbbalSzCzqIQhnaWjmsaAI76kFuqhgSg",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "localhost:9100/api/v2/delete-loanCar-by-id/2776",
+          "host": [
+            "localhost"
+          ],
+          "port": "9100",
+          "path": [
+            "api",
+            "v2",
+            "delete-loanCar-by-id",
+            "2776"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "xóa người bảo lãnh",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ2YW5oYW5odGVzdCIsImlhdCI6MTc1OTg4ODQwNSwiZXhwIjoxNzU5OTc0ODA1fQ.ouiDuAxQe946K0Q29jbny8p7beLm5TXZDbh0dk-zfbYy7_DzEx1HEQYgAqrfEanW5hRGe-JvR3Z28cawzwP-8w",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "localhost:9100/api/v2/delete-guardian-by-id/214945",
+          "host": [
+            "localhost"
+          ],
+          "port": "9100",
+          "path": [
+            "api",
+            "v2",
+            "delete-guardian-by-id",
+            "214945"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "xóa người cổ đông",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ2YW5oYW5odGVzdCIsImlhdCI6MTc1OTg4ODQwNSwiZXhwIjoxNzU5OTc0ODA1fQ.ouiDuAxQe946K0Q29jbny8p7beLm5TXZDbh0dk-zfbYy7_DzEx1HEQYgAqrfEanW5hRGe-JvR3Z28cawzwP-8w",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "localhost:9100/api/v2/delete-shareholders-by-id/2198",
+          "host": [
+            "localhost"
+          ],
+          "port": "9100",
+          "path": [
+            "api",
+            "v2",
+            "delete-shareholders-by-id",
+            "2198"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "danh sách loại xe DN",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ2YW5oYW5odGVzdCIsImlhdCI6MTc3MDcwNDExNiwiZXhwIjoxNzcwNzkwNTE2fQ.CHY-UYXTgmYeuA7aFpRg4GzHGq254qi1Sqa8vdoVv1xADFBDMcmt4zbzv0DsIZKcX_hnJUzUjY3ebqyn9oqfWQ",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://apitest.finy.vn/api/get-all-vehicleType-car/20",
+          "protocol": "https",
+          "host": [
+            "apitest",
+            "finy",
+            "vn"
+          ],
+          "path": [
+            "api",
+            "get-all-vehicleType-car",
+            "20"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Sản phẩm vay",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ2YW5oYW5odGVzdCIsImlhdCI6MTc3MDcwNDExNiwiZXhwIjoxNzcwNzkwNTE2fQ.CHY-UYXTgmYeuA7aFpRg4GzHGq254qi1Sqa8vdoVv1xADFBDMcmt4zbzv0DsIZKcX_hnJUzUjY3ebqyn9oqfWQ",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{url}}/api/get-all-code-by-typeDN/LOANTYPE",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "get-all-code-by-typeDN",
+            "LOANTYPE"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Lịch thanh toán",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ2YW5oYW5odGVzdCIsImlhdCI6MTc3MDcwNDExNiwiZXhwIjoxNzcwNzkwNTE2fQ.CHY-UYXTgmYeuA7aFpRg4GzHGq254qi1Sqa8vdoVv1xADFBDMcmt4zbzv0DsIZKcX_hnJUzUjY3ebqyn9oqfWQ",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{url}}/api/loan-schedule-file?loanid=5344",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "loan-schedule-file"
+          ],
+          "query": [
+            {
+              "key": "loanid",
+              "value": "5344"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "upload -file",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ2YW5oYW5odGVzdCIsImlhdCI6MTc2NjAyMTI4NywiZXhwIjoxNzY2MTA3Njg3fQ.k5lySKcqX5CE5U6Ma_JnXBLBdj0WNtZH4C1y6YP2tFEZvF4feGIn1gjNsCQrUNJSqt_fB4-tCOtM_r5vs8kecA",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "file",
+              "type": "file",
+              "uuid": "e895af23-ac83-4a94-a5be-03103b7ff10c",
+              "src": [
+                "/C:/Users/SONLC/Desktop/Ảnh ốp điện thoại/27 - Copy.jpg",
+                "/C:/Users/SONLC/Desktop/Ảnh ốp điện thoại/27.jpg",
+                "/C:/Users/SONLC/Desktop/Ảnh ốp điện thoại/7882c0548193700fa8fa309f3c1a47a2 - Copy.jpg",
+                "/C:/Users/SONLC/Desktop/Ảnh ốp điện thoại/7882c0548193700fa8fa309f3c1a47a2.jpg",
+                "/C:/Users/SONLC/Desktop/Ảnh ốp điện thoại/494471684_1414879036381696_543316131057194700_n - Copy.jpg",
+                "/C:/Users/SONLC/Desktop/Ảnh ốp điện thoại/a0573891750b10eae44fbe7abc07d3d3.jfif",
+                "/C:/Users/SONLC/Desktop/Ảnh ốp điện thoại/bruc lee - Copy.png",
+                "/C:/Users/SONLC/Desktop/Ảnh ốp điện thoại/bruc lee 1 - Copy.png",
+                "/C:/Users/SONLC/Desktop/Ảnh ốp điện thoại/bruc lee 1.png",
+                "/C:/Users/SONLC/Desktop/Ảnh ốp điện thoại/bruc lee 3 - Copy.png",
+                "/C:/Users/SONLC/Desktop/Ảnh ốp điện thoại/bruc lee 4 - Copy.pdn",
+                "/C:/Users/SONLC/Desktop/Ảnh ốp điện thoại/bruc lee 4.pdn",
+                "/C:/Users/SONLC/Desktop/Ảnh ốp điện thoại/a0573891750b10eae44fbe7abc07d3d3.jfif",
+                "/C:/Users/SONLC/Desktop/Ảnh ốp điện thoại/05daaa91041d85675651639fc88c6b87_tn - Copy.jfif",
+                "/C:/Users/SONLC/Desktop/Ảnh ốp điện thoại/05daaa91041d85675651639fc88c6b87_tn.jfif",
+                "/C:/Users/SONLC/Desktop/Ảnh ốp điện thoại/27 - Copy.jpg",
+                "/C:/Users/SONLC/Desktop/Ảnh ốp điện thoại/27 - Copy.jpg",
+                "/C:/Users/SONLC/Desktop/Ảnh ốp điện thoại/27.jpg",
+                "/C:/Users/SONLC/Desktop/Ảnh ốp điện thoại/7882c0548193700fa8fa309f3c1a47a2 - Copy.jpg",
+                "/C:/Users/SONLC/Desktop/Ảnh ốp điện thoại/7882c0548193700fa8fa309f3c1a47a2.jpg",
+                "/C:/Users/SONLC/Desktop/Ảnh ốp điện thoại/494471684_1414879036381696_543316131057194700_n - Copy.jpg",
+                "/C:/Users/SONLC/Desktop/Ảnh ốp điện thoại/bruc lee - Copy (2).png",
+                "/C:/Users/SONLC/Desktop/Ảnh ốp điện thoại/bruc lee - Copy.png",
+                "/C:/Users/SONLC/Desktop/Ảnh ốp điện thoại/bruc lee 1 - Copy.png",
+                "/C:/Users/SONLC/Desktop/Ảnh ốp điện thoại/bruc lee 1.png",
+                "/C:/Users/SONLC/Desktop/Ảnh ốp điện thoại/bruc lee 3 - Copy.png",
+                "/C:/Users/SONLC/Desktop/Ảnh ốp điện thoại/bruc lee 3.png",
+                "/C:/Users/SONLC/Desktop/Ảnh ốp điện thoại/bruc lee 4 - Copy - Copy.pdn",
+                "/C:/Users/SONLC/Desktop/Ảnh ốp điện thoại/bruc lee 4 - Copy (2).pdn",
+                "/C:/Users/SONLC/Desktop/Ảnh ốp điện thoại/05daaa91041d85675651639fc88c6b87_tn - Copy.jfif",
+                "/C:/Users/SONLC/Desktop/Ảnh ốp điện thoại/05daaa91041d85675651639fc88c6b87_tn.jfif",
+                "/C:/Users/SONLC/Desktop/Ảnh ốp điện thoại/27 - Copy.jpg",
+                "/C:/Users/SONLC/Desktop/Ảnh ốp điện thoại/27.jpg",
+                "/C:/Users/SONLC/Desktop/Ảnh ốp điện thoại/7882c0548193700fa8fa309f3c1a47a2 - Copy.jpg",
+                "/C:/Users/SONLC/Desktop/Ảnh ốp điện thoại/7882c0548193700fa8fa309f3c1a47a2.jpg",
+                "/C:/Users/SONLC/Desktop/Ảnh ốp điện thoại/bruc lee 4 - Copy.pdn",
+                "/C:/Users/SONLC/Desktop/Ảnh ốp điện thoại/bruc lee 4.pdn",
+                "/C:/Users/SONLC/Desktop/Ảnh ốp điện thoại/bruc lee 4.png",
+                "/C:/Users/SONLC/Desktop/Ảnh ốp điện thoại/bruc lee.png",
+                "/C:/Users/SONLC/Desktop/Ảnh ốp điện thoại/doi-so-do-vietnamnet-1 - Copy (2).jfif",
+                "/C:/Users/SONLC/Desktop/Ảnh ốp điện thoại/doi-so-do-vietnamnet-1 - Copy.jfif",
+                "/C:/Users/SONLC/Desktop/Ảnh ốp điện thoại/a0573891750b10eae44fbe7abc07d3d3 - Copy.jfif",
+                "/C:/Users/SONLC/Desktop/Ảnh ốp điện thoại/a0573891750b10eae44fbe7abc07d3d3.jfif",
+                "/C:/Users/SONLC/Desktop/Ảnh ốp điện thoại/bruc lee - Copy - Copy.png",
+                "/C:/Users/SONLC/Desktop/Ảnh ốp điện thoại/bruc lee - Copy (2).png",
+                "/C:/Users/SONLC/Desktop/Ảnh ốp điện thoại/bruc lee - Copy.png",
+                "/C:/Users/SONLC/Desktop/Ảnh ốp điện thoại/bruc lee 1 - Copy - Copy.png",
+                "/C:/Users/SONLC/Desktop/Ảnh ốp điện thoại/bruc lee 1 - Copy.png",
+                "/C:/Users/SONLC/Desktop/Ảnh ốp điện thoại/bruc lee 1.png",
+                "/C:/Users/SONLC/Desktop/Ảnh ốp điện thoại/bruc lee 3 - Copy.png",
+                "/C:/Users/SONLC/Desktop/Ảnh ốp điện thoại/bruc lee 3.png",
+                "/C:/Users/SONLC/Desktop/Ảnh ốp điện thoại/bruc lee 4 - Copy - Copy.pdn",
+                "/C:/Users/SONLC/Desktop/Ảnh ốp điện thoại/bruc lee 4 - Copy (2).pdn",
+                "/C:/Users/SONLC/Desktop/Ảnh ốp điện thoại/bruc lee 4 - Copy.pdn",
+                "/C:/Users/SONLC/Desktop/Ảnh ốp điện thoại/bruc lee 4.pdn"
+              ]
+            },
+            {
+              "key": "custId",
+              "value": "9182",
+              "type": "text",
+              "uuid": "eedf9c47-99ec-41b9-b283-475986eb7e36"
+            },
+            {
+              "key": "saleId",
+              "value": "859",
+              "type": "text",
+              "uuid": "a8862a2e-ae0b-4517-8ddc-2549e2f52a5c"
+            },
+            {
+              "key": "type",
+              "value": "hosodoanhnghiep",
+              "type": "text",
+              "uuid": "881dc85f-7025-4d17-bf7b-5c5db9e879b9"
+            },
+            {
+              "key": "regId",
+              "value": "10850",
+              "type": "text",
+              "uuid": "2cf60798-645c-4179-a460-577d6432d060"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{url}}/api/upload-file",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "upload-file"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "tạo khoản vay",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ2YW5oYW5odGVzdCIsImlhdCI6MTc2Mzk1MjI4NiwiZXhwIjoxNzY0MDM4Njg2fQ.NIi0zBVipG7SFC9QW_H3n0SbeWkUpDj5ypa8gtnmkS67Db5G-a58bw0HyTIMUEbom9429ajp6pODkYd2GCshEQ",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"regId\":10768,\"custId\":\"9138\",\"lnDate\":\"\",\"insuranceFee\":45000000,\"guaranteeTranFee\":200000,\"expertiseFeePrePaid\":0,\"assetManagementFeeRate\":\"1.3\",\"expertiseFeeRate\":\"1.4\",\"changeRate\":\"1.1\",\"changeRateOvd\":\"3\",\"prePaymentFeeRate\":\"5\",\"documentNo\":\"Test_12\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:9100/api/v2/create-business-loan",
+          "host": [
+            "localhost"
+          ],
+          "port": "9100",
+          "path": [
+            "api",
+            "v2",
+            "create-business-loan"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "tính giá xe",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ2YW5oYW5odGVzdCIsImlhdCI6MTc3MDcwNDExNiwiZXhwIjoxNzcwNzkwNTE2fQ.CHY-UYXTgmYeuA7aFpRg4GzHGq254qi1Sqa8vdoVv1xADFBDMcmt4zbzv0DsIZKcX_hnJUzUjY3ebqyn9oqfWQ",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"vehicleId\": 4,\r\n    \"vehicleAge\": 4,// = năm htai - năm sx + 1 \r\n    \"bt\": 1, // biển tỉnh\r\n    \"dbm\": 1, //đã bổ máy\r\n    \"dkmn\": 0, //đăng ký mờ nát\r\n    \"rrdn\": 1, //rò rỉ dầu nhớt, khí ga\r\n    \"bdmm\": 0, //biến dạng móp méo\r\n    \"tngt\": 0, // xe tai nạn giao thông\r\n    \"tk\": 0, //xe bị thủy kích\r\n   // \"dnnv\": 0, // đồ nhựa nứt vỡ - dn k cần\r\n   // \"sx\": 0, // sơn xước - dn k cần\r\n    \"vehRenovation\": 1, // cải tạo hoán cải\r\n    \"sanction\": 1200 // gthong xu phạt\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{url}}/api/calculate-price-business",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "calculate-price-business"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "test_url",
+      "value": "https://apigateway.lendbiz.vn"
+    },
+    {
+      "key": "token",
+      "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ2aXRhIiwiaWF0IjoxNjgwMDY2MjE1LCJleHAiOjE2ODAwNjk4MTV9.kdTMZ3RB-SKezVnPDifIoAboEM_VyHnc_Zd4dSQ3FI9sF5vXVkcHxNq6CkjPQBsXFLkMJI2f5hnl7x-pYAUFpQ"
+    },
+    {
+      "key": "url",
+      "value": ""
+    }
+  ]
+}

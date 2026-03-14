@@ -1,0 +1,235 @@
+    if pv_role = 9 then
+            EXECUTE IMMEDIATE '
+            CREATE TABLE TMP_CONVERSION_RATE_REPORT AS
+            SELECT l1.fullname, l1.lndate, l1.amount, l1.loanid, l1.lnclass class1, l1.debt debt1,
+                   l2.lnclass class2, l2.debt debt2,l1.loantype, l1.branchname, l1.areaname,
+                   -- [ADDED] Cac truong moi
+                   l1.documentno, l1.sale_name, l1.sale_code, l1.recovery_name, l1.recovery_code
+            FROM
+            (SELECT c.fullname, l.lndate, l.amount, h.loanid, h.businessdate, h.lnclass,
+                (h.prinnml + h.prinovd) debt,al.name loantype, b.name branchname, a.name areaname,
+                -- [ADDED] Lay thong tin moi trong l1
+                l.documentno,
+                u.full_name as sale_name,
+                u.user_code as sale_code,
+                (SELECT full_name FROM admin_user ad, debt_recovery dr WHERE dr.loanid = l.id and dr.adminuserid = ad.user_id and rownum = 1) as recovery_name,
+                (SELECT user_code FROM admin_user ad, debt_recovery dr WHERE dr.loanid = l.id and dr.adminuserid = ad.user_id and rownum = 1) as recovery_code
+                    FROM loanhist h, loan l, customer c, loanregistration r, admin_user u, branch b, area a,allcode al, region g
+                        WHERE h.loanid = l.id
+                        AND l.custid = c.id
+                        AND l.regid = r.id
+                        AND r.saleid = u.user_id
+                        AND u.branch = b.bid
+                        AND b.aid = a.aid
+                        AND a.rid = g.rid
+                        and trim(r.loantype) = trim(al.code) and al.type = ''LOANTYPE'' and b.aid = ''' || trim(pv_area) || '''
+                        AND (h.businessdate = TO_DATE(''' || pv_fromDate || ''', ''DD/MM/YYYY'') OR ''' || pv_fromDate || ''' IS NULL)
+                        AND h.loanid IN (SELECT loanid FROM loanhist WHERE (businessdate = TO_DATE(''' || pv_fromDate || ''', ''DD/MM/YYYY'')))
+                        AND (upper(CONVERTTOUNSIGN(c.fullname)) LIKE ''%'' || upper(CONVERTTOUNSIGN(''' || pv_fullName || ''')) || ''%'' OR ''' || pv_fullName || ''' IS NULL)
+                        AND (upper(CONVERTTOUNSIGN(b.name)) LIKE ''%'' || upper(CONVERTTOUNSIGN(''' || pv_branchName || ''')) || ''%'' OR ''' || pv_branchName || ''' IS NULL)
+                        AND (upper(CONVERTTOUNSIGN(a.name)) LIKE ''%'' || upper(CONVERTTOUNSIGN(''' || pv_areaName || ''')) || ''%'' OR ''' || pv_areaName || ''' IS NULL)
+                        AND (upper(CONVERTTOUNSIGN(g.name)) LIKE ''%'' || upper(CONVERTTOUNSIGN(''' || pv_regionName || ''')) || ''%'' OR ''' || pv_regionName || ''' IS NULL)
+
+                ) l1,
+            (SELECT c.fullname, l.lndate, l.amount, h.loanid, h.businessdate, h.lnclass, (h.prinnml + h.prinovd) debt, b.name branchname, a.name areaname
+                    FROM loanhist h, loan l, customer c, loanregistration r, admin_user u, branch b, area a, region g
+                    WHERE h.loanid = l.id
+                        AND l.custid = c.id
+                        AND l.regid = r.id
+                        AND r.saleid = u.user_id
+                        AND u.branch = b.bid
+                        AND b.aid = a.aid
+                        AND a.rid = g.rid and b.aid = ''' || trim(pv_area) || '''
+                        AND (h.businessdate = TO_DATE(''' || pv_toDate || ''', ''DD/MM/YYYY'') OR ''' || pv_toDate || ''' IS NULL)
+                        AND h.loanid IN (SELECT loanid FROM loanhist WHERE (businessdate = TO_DATE(''' || pv_fromDate || ''', ''DD/MM/YYYY'')))
+                        AND (upper(CONVERTTOUNSIGN(c.fullname)) LIKE ''%'' || upper(CONVERTTOUNSIGN(''' || pv_fullName || ''')) || ''%'' OR ''' || pv_fullName || ''' IS NULL)
+                        AND (upper(CONVERTTOUNSIGN(b.name)) LIKE ''%'' || upper(CONVERTTOUNSIGN(''' || pv_branchName || ''')) || ''%'' OR ''' || pv_branchName || ''' IS NULL)
+                        AND (upper(CONVERTTOUNSIGN(a.name)) LIKE ''%'' || upper(CONVERTTOUNSIGN(''' || pv_areaName || ''')) || ''%'' OR ''' || pv_areaName || ''' IS NULL)
+                        AND (upper(CONVERTTOUNSIGN(g.name)) LIKE ''%'' || upper(CONVERTTOUNSIGN(''' || pv_regionName || ''')) || ''%'' OR ''' || pv_regionName || ''' IS NULL)
+
+                ) l2
+                WHERE l1.loanid = l2.loanid
+                UNION
+                SELECT c.fullname, l.lndate, l.amount, h.loanid, h.lnclass class1, (h.prinnml + h.prinovd) debt1,
+                        ''B0'' class2, 0 debt2,al.name loantype, b.name branchname, a.name areaname,
+                         l.documentno,
+                        u.full_name as sale_name,
+                        u.user_code as sale_code,
+                        (SELECT full_name FROM admin_user ad, debt_recovery dr WHERE dr.loanid = l.id and dr.adminuserid = ad.user_id and rownum = 1) as recovery_name,
+                        (SELECT user_code FROM admin_user ad, debt_recovery dr WHERE dr.loanid = l.id and dr.adminuserid = ad.user_id and rownum = 1) as recovery_code
+                FROM loanhist h, loan l, customer c, loanregistration r, admin_user u, branch b, area a,allcode al, region g
+                WHERE h.loanid = l.id
+                AND l.custid = c.id
+                AND l.regid = r.id
+                AND r.saleid = u.user_id
+                AND u.branch = b.bid
+                AND b.aid = a.aid
+                AND a.rid = g.rid
+                and trim(r.loantype) = trim(al.code) and al.type = ''LOANTYPE'' and b.aid = ''' || trim(pv_area) || '''
+                AND (h.businessdate = TO_DATE(''' || pv_fromDate || ''', ''DD/MM/YYYY'') OR ''' || pv_fromDate || ''' IS NULL)
+                AND l.id NOT IN (SELECT h1.loanid FROM (SELECT loanid FROM loanhist WHERE (businessdate = TO_DATE(''' || pv_fromDate || ''', ''DD/MM/YYYY''))) h1,
+                    (SELECT loanid FROM loanhist WHERE (businessdate = TO_DATE(''' || pv_toDate || ''', ''DD/MM/YYYY'') OR ''' || pv_toDate || ''' IS NULL)) h2
+                    WHERE h1.loanid = h2.loanid)
+                AND (upper(CONVERTTOUNSIGN(c.fullname)) LIKE ''%'' || upper(CONVERTTOUNSIGN(''' || pv_fullName || ''')) || ''%'' OR ''' || pv_fullName || ''' IS NULL)
+                AND (upper(CONVERTTOUNSIGN(b.name)) LIKE ''%'' || upper(CONVERTTOUNSIGN(''' || pv_branchName || ''')) || ''%'' OR ''' || pv_branchName || ''' IS NULL)
+                AND (upper(CONVERTTOUNSIGN(a.name)) LIKE ''%'' || upper(CONVERTTOUNSIGN(''' || pv_areaName || ''')) || ''%'' OR ''' || pv_areaName || ''' IS NULL)
+                AND (upper(CONVERTTOUNSIGN(g.name)) LIKE ''%'' || upper(CONVERTTOUNSIGN(''' || pv_regionName || ''')) || ''%'' OR ''' || pv_regionName || ''' IS NULL)
+
+            ';
+        elsif pv_role = 10 then
+            EXECUTE IMMEDIATE '
+            CREATE TABLE TMP_CONVERSION_RATE_REPORT AS
+            SELECT l1.fullname, l1.lndate, l1.amount, l1.loanid, l1.lnclass class1, l1.debt debt1,
+                   l2.lnclass class2, l2.debt debt2,l1.loantype, l1.branchname, l1.areaname,
+                   -- [ADDED] Cac truong moi
+                   l1.documentno, l1.sale_name, l1.sale_code, l1.recovery_name, l1.recovery_code
+            FROM
+            (SELECT c.fullname, l.lndate, l.amount, h.loanid, h.businessdate, h.lnclass,
+                (h.prinnml + h.prinovd) debt,al.name loantype, b.name branchname, a.name areaname,
+                 l.documentno,
+                u.full_name as sale_name,
+                u.user_code as sale_code,
+                (SELECT full_name FROM admin_user ad, debt_recovery dr WHERE dr.loanid = l.id and dr.adminuserid = ad.user_id and rownum = 1) as recovery_name,
+                (SELECT user_code FROM admin_user ad, debt_recovery dr WHERE dr.loanid = l.id and dr.adminuserid = ad.user_id and rownum = 1) as recovery_code
+                    FROM loanhist h, loan l, customer c, loanregistration r, admin_user u, branch b, area a,allcode al, region g
+                        WHERE h.loanid = l.id
+                        AND l.custid = c.id
+                        AND l.regid = r.id
+                        AND r.saleid = u.user_id
+                        AND u.branch = b.bid
+                        AND b.aid = a.aid
+                        AND a.rid = g.rid
+                        and trim(r.loantype) = trim(al.code) and al.type = ''LOANTYPE'' and b.rid = ''' || trim(pv_region) || '''
+                        AND (h.businessdate = TO_DATE(''' || pv_fromDate || ''', ''DD/MM/YYYY'') OR ''' || pv_fromDate || ''' IS NULL)
+                        AND h.loanid IN (SELECT loanid FROM loanhist WHERE (businessdate = TO_DATE(''' || pv_fromDate || ''', ''DD/MM/YYYY'')))
+                        AND (upper(CONVERTTOUNSIGN(c.fullname)) LIKE ''%'' || upper(CONVERTTOUNSIGN(''' || pv_fullName || ''')) || ''%'' OR ''' || pv_fullName || ''' IS NULL)
+                        AND (upper(CONVERTTOUNSIGN(b.name)) LIKE ''%'' || upper(CONVERTTOUNSIGN(''' || pv_branchName || ''')) || ''%'' OR ''' || pv_branchName || ''' IS NULL)
+                        AND (upper(CONVERTTOUNSIGN(a.name)) LIKE ''%'' || upper(CONVERTTOUNSIGN(''' || pv_areaName || ''')) || ''%'' OR ''' || pv_areaName || ''' IS NULL)
+                        AND (upper(CONVERTTOUNSIGN(g.name)) LIKE ''%'' || upper(CONVERTTOUNSIGN(''' || pv_regionName || ''')) || ''%'' OR ''' || pv_regionName || ''' IS NULL)
+
+                ) l1,
+            (SELECT c.fullname, l.lndate, l.amount, h.loanid, h.businessdate, h.lnclass, (h.prinnml + h.prinovd) debt, b.name branchname, a.name areaname
+                    FROM loanhist h, loan l, customer c, loanregistration r, admin_user u, branch b, area a, region g
+                    WHERE h.loanid = l.id
+                        AND l.custid = c.id
+                        AND l.regid = r.id
+                        AND r.saleid = u.user_id
+                        AND u.branch = b.bid
+                        AND b.aid = a.aid
+                        AND a.rid = g.rid and b.rid = ''' || trim(pv_region) || '''
+                        AND (h.businessdate = TO_DATE(''' || pv_toDate || ''', ''DD/MM/YYYY'') OR ''' || pv_toDate || ''' IS NULL)
+                        AND h.loanid IN (SELECT loanid FROM loanhist WHERE (businessdate = TO_DATE(''' || pv_fromDate || ''', ''DD/MM/YYYY'')))
+                        AND (upper(CONVERTTOUNSIGN(c.fullname)) LIKE ''%'' || upper(CONVERTTOUNSIGN(''' || pv_fullName || ''')) || ''%'' OR ''' || pv_fullName || ''' IS NULL)
+                        AND (upper(CONVERTTOUNSIGN(b.name)) LIKE ''%'' || upper(CONVERTTOUNSIGN(''' || pv_branchName || ''')) || ''%'' OR ''' || pv_branchName || ''' IS NULL)
+                        AND (upper(CONVERTTOUNSIGN(a.name)) LIKE ''%'' || upper(CONVERTTOUNSIGN(''' || pv_areaName || ''')) || ''%'' OR ''' || pv_areaName || ''' IS NULL)
+                        AND (upper(CONVERTTOUNSIGN(g.name)) LIKE ''%'' || upper(CONVERTTOUNSIGN(''' || pv_regionName || ''')) || ''%'' OR ''' || pv_regionName || ''' IS NULL)
+
+                ) l2
+                WHERE l1.loanid = l2.loanid
+                UNION
+                SELECT c.fullname, l.lndate, l.amount, h.loanid, h.lnclass class1, (h.prinnml + h.prinovd) debt1,
+                        ''B0'' class2, 0 debt2,al.name loantype, b.name branchname, a.name areaname,
+
+                        l.documentno,
+                        u.full_name as sale_name,
+                        u.user_code as sale_code,
+                        (SELECT full_name FROM admin_user ad, debt_recovery dr WHERE dr.loanid = l.id and dr.adminuserid = ad.user_id and rownum = 1) as recovery_name,
+                        (SELECT user_code FROM admin_user ad, debt_recovery dr WHERE dr.loanid = l.id and dr.adminuserid = ad.user_id and rownum = 1) as recovery_code
+                FROM loanhist h, loan l, customer c, loanregistration r, admin_user u, branch b, area a,allcode al, region g
+                WHERE h.loanid = l.id
+                AND l.custid = c.id
+                AND l.regid = r.id
+                AND r.saleid = u.user_id
+                AND u.branch = b.bid
+                AND b.aid = a.aid
+                AND a.rid = g.rid
+                and trim(r.loantype) = trim(al.code) and al.type = ''LOANTYPE'' and b.rid = ''' || trim(pv_region) || '''
+                AND (h.businessdate = TO_DATE(''' || pv_fromDate || ''', ''DD/MM/YYYY'') OR ''' || pv_fromDate || ''' IS NULL)
+                AND l.id NOT IN (SELECT h1.loanid FROM (SELECT loanid FROM loanhist WHERE (businessdate = TO_DATE(''' || pv_fromDate || ''', ''DD/MM/YYYY''))) h1,
+                    (SELECT loanid FROM loanhist WHERE (businessdate = TO_DATE(''' || pv_toDate || ''', ''DD/MM/YYYY'') OR ''' || pv_toDate || ''' IS NULL)) h2
+                    WHERE h1.loanid = h2.loanid)
+                AND (upper(CONVERTTOUNSIGN(c.fullname)) LIKE ''%'' || upper(CONVERTTOUNSIGN(''' || pv_fullName || ''')) || ''%'' OR ''' || pv_fullName || ''' IS NULL)
+                AND (upper(CONVERTTOUNSIGN(b.name)) LIKE ''%'' || upper(CONVERTTOUNSIGN(''' || pv_branchName || ''')) || ''%'' OR ''' || pv_branchName || ''' IS NULL)
+                AND (upper(CONVERTTOUNSIGN(a.name)) LIKE ''%'' || upper(CONVERTTOUNSIGN(''' || pv_areaName || ''')) || ''%'' OR ''' || pv_areaName || ''' IS NULL)
+                AND (upper(CONVERTTOUNSIGN(g.name)) LIKE ''%'' || upper(CONVERTTOUNSIGN(''' || pv_regionName || ''')) || ''%'' OR ''' || pv_regionName || ''' IS NULL)
+
+            ';
+        else
+            EXECUTE IMMEDIATE '
+            CREATE TABLE TMP_CONVERSION_RATE_REPORT AS
+            SELECT l1.fullname, l1.lndate, l1.amount, l1.loanid, l1.lnclass class1, l1.debt debt1,
+                   l2.lnclass class2, l2.debt debt2,l1.loantype, l1.branchname, l1.areaname,
+                   -- [ADDED] Cac truong moi
+                   l1.documentno, l1.sale_name, l1.sale_code, l1.recovery_name, l1.recovery_code
+            FROM
+            (SELECT c.fullname, l.lndate, l.amount, h.loanid, h.businessdate, h.lnclass,
+                (h.prinnml + h.prinovd) debt,al.name loantype, b.name branchname, a.name areaname,
+
+                l.documentno,
+                u.full_name as sale_name,
+                u.user_code as sale_code,
+                (SELECT full_name FROM admin_user ad, debt_recovery dr WHERE dr.loanid = l.id and dr.adminuserid = ad.user_id and rownum = 1) as recovery_name,
+                (SELECT user_code FROM admin_user ad, debt_recovery dr WHERE dr.loanid = l.id and dr.adminuserid = ad.user_id and rownum = 1) as recovery_code
+                    FROM loanhist h, loan l, customer c, loanregistration r, admin_user u, branch b, area a,allcode al, region g
+                        WHERE h.loanid = l.id
+                        AND l.custid = c.id
+                        AND l.regid = r.id
+                        AND r.saleid = u.user_id
+                        AND u.branch = b.bid
+                        AND b.aid = a.aid
+                        AND a.rid = g.rid
+                        and trim(r.loantype) = trim(al.code) and al.type = ''LOANTYPE''
+                        AND (h.businessdate = TO_DATE(''' || pv_fromDate || ''', ''DD/MM/YYYY'') OR ''' || pv_fromDate || ''' IS NULL)
+                        AND h.loanid IN (SELECT loanid FROM loanhist WHERE (businessdate = TO_DATE(''' || pv_fromDate || ''', ''DD/MM/YYYY'')))
+                        AND (upper(CONVERTTOUNSIGN(c.fullname)) LIKE ''%'' || upper(CONVERTTOUNSIGN(''' || pv_fullName || ''')) || ''%'' OR ''' || pv_fullName || ''' IS NULL)
+                        AND (upper(CONVERTTOUNSIGN(b.name)) LIKE ''%'' || upper(CONVERTTOUNSIGN(''' || pv_branchName || ''')) || ''%'' OR ''' || pv_branchName || ''' IS NULL)
+                        AND (upper(CONVERTTOUNSIGN(a.name)) LIKE ''%'' || upper(CONVERTTOUNSIGN(''' || pv_areaName || ''')) || ''%'' OR ''' || pv_areaName || ''' IS NULL)
+                        AND (upper(CONVERTTOUNSIGN(g.name)) LIKE ''%'' || upper(CONVERTTOUNSIGN(''' || pv_regionName || ''')) || ''%'' OR ''' || pv_regionName || ''' IS NULL)
+
+                ) l1,
+            (SELECT c.fullname, l.lndate, l.amount, h.loanid, h.businessdate, h.lnclass, (h.prinnml + h.prinovd) debt, b.name branchname, a.name areaname
+                    FROM loanhist h, loan l, customer c, loanregistration r, admin_user u, branch b, area a, region g
+                    WHERE h.loanid = l.id
+                        AND l.custid = c.id
+                        AND l.regid = r.id
+                        AND r.saleid = u.user_id
+                        AND u.branch = b.bid
+                        AND b.aid = a.aid
+                        AND a.rid = g.rid
+                        AND (h.businessdate = TO_DATE(''' || pv_toDate || ''', ''DD/MM/YYYY'') OR ''' || pv_toDate || ''' IS NULL)
+                        AND h.loanid IN (SELECT loanid FROM loanhist WHERE (businessdate = TO_DATE(''' || pv_fromDate || ''', ''DD/MM/YYYY'')))
+                        AND (upper(CONVERTTOUNSIGN(c.fullname)) LIKE ''%'' || upper(CONVERTTOUNSIGN(''' || pv_fullName || ''')) || ''%'' OR ''' || pv_fullName || ''' IS NULL)
+                        AND (upper(CONVERTTOUNSIGN(b.name)) LIKE ''%'' || upper(CONVERTTOUNSIGN(''' || pv_branchName || ''')) || ''%'' OR ''' || pv_branchName || ''' IS NULL)
+                        AND (upper(CONVERTTOUNSIGN(a.name)) LIKE ''%'' || upper(CONVERTTOUNSIGN(''' || pv_areaName || ''')) || ''%'' OR ''' || pv_areaName || ''' IS NULL)
+                        AND (upper(CONVERTTOUNSIGN(g.name)) LIKE ''%'' || upper(CONVERTTOUNSIGN(''' || pv_regionName || ''')) || ''%'' OR ''' || pv_regionName || ''' IS NULL)
+
+                ) l2
+                WHERE l1.loanid = l2.loanid
+                UNION
+                SELECT c.fullname, l.lndate, l.amount, h.loanid, h.lnclass class1, (h.prinnml + h.prinovd) debt1,
+                        ''B0'' class2, 0 debt2,al.name loantype, b.name branchname, a.name areaname,
+
+                        l.documentno,
+                        u.full_name as sale_name,
+                        u.user_code as sale_code,
+                        (SELECT full_name FROM admin_user ad, debt_recovery dr WHERE dr.loanid = l.id and dr.adminuserid = ad.user_id and rownum = 1) as recovery_name,
+                        (SELECT user_code FROM admin_user ad, debt_recovery dr WHERE dr.loanid = l.id and dr.adminuserid = ad.user_id and rownum = 1) as recovery_code
+                FROM loanhist h, loan l, customer c, loanregistration r, admin_user u, branch b, area a,allcode al, region g
+                WHERE h.loanid = l.id
+                AND l.custid = c.id
+                AND l.regid = r.id
+                AND r.saleid = u.user_id
+                AND u.branch = b.bid
+                AND b.aid = a.aid
+                AND a.rid = g.rid
+                and trim(r.loantype) = trim(al.code) and al.type = ''LOANTYPE''
+                AND (h.businessdate = TO_DATE(''' || pv_fromDate || ''', ''DD/MM/YYYY'') OR ''' || pv_fromDate || ''' IS NULL)
+                AND l.id NOT IN (SELECT h1.loanid FROM (SELECT loanid FROM loanhist WHERE (businessdate = TO_DATE(''' || pv_fromDate || ''', ''DD/MM/YYYY''))) h1,
+                    (SELECT loanid FROM loanhist WHERE (businessdate = TO_DATE(''' || pv_toDate || ''', ''DD/MM/YYYY'') OR ''' || pv_toDate || ''' IS NULL)) h2
+                    WHERE h1.loanid = h2.loanid)
+                AND (upper(CONVERTTOUNSIGN(c.fullname)) LIKE ''%'' || upper(CONVERTTOUNSIGN(''' || pv_fullName || ''')) || ''%'' OR ''' || pv_fullName || ''' IS NULL)
+                AND (upper(CONVERTTOUNSIGN(b.name)) LIKE ''%'' || upper(CONVERTTOUNSIGN(''' || pv_branchName || ''')) || ''%'' OR ''' || pv_branchName || ''' IS NULL)
+                AND (upper(CONVERTTOUNSIGN(a.name)) LIKE ''%'' || upper(CONVERTTOUNSIGN(''' || pv_areaName || ''')) || ''%'' OR ''' || pv_areaName || ''' IS NULL)
+                AND (upper(CONVERTTOUNSIGN(g.name)) LIKE ''%'' || upper(CONVERTTOUNSIGN(''' || pv_regionName || ''')) || ''%'' OR ''' || pv_regionName || ''' IS NULL)
+
+            ';

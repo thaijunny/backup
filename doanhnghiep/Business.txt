@@ -1,0 +1,34 @@
+-- DB Packages:
+1. PCK_BUSINESS
+2. PCK_VEHICLE
+- finalCalPriceBusiness
+3. PCK_LOAN
+- getListLoanRegistration
+
+---Java
+-BusinessController
+-LoanLimitController
+-LoanRegistrationController
+-VehicleController
+
+-Bảng:
+1. business_owner
+2. business_sharehodle
+3. covehicle_business
+4. customer_extra
+5. loanregistration_extra
+6. semilarassets_business
+7. vehicleinspection
+8. guardians
+9. allcode
+10. ward
+11. district
+12. province
+13. vehicletype
+
+
+
+
+
+
+

@@ -1,0 +1,200 @@
+package com.technology.apigateway.service;
+
+import com.technology.apigateway.constant.Constants;
+import com.technology.apigateway.controller.request.AdminUserRequest;
+import com.technology.apigateway.controller.request.AreaRequest;
+import com.technology.apigateway.controller.request.BranchRequest;
+import com.technology.apigateway.controller.request.ChangePasswordRequest;
+import com.technology.apigateway.exception.LendbizException;
+import com.technology.apigateway.models.VehicleDTO;
+import com.technology.apigateway.utils.ValidUtils;
+import com.technology.apigateway.utils.ZoneEnum;
+import org.springframework.stereotype.Component;
+import org.springframework.util.ObjectUtils;
+
+import javax.annotation.Resource;
+import java.util.List;
+
+@Component
+public class ValidateService {
+
+    @Resource
+    private ValidUtils validUtils;
+
+    public void validateCreateAdminUser(AdminUserRequest request) {
+        validUtils.validateUsername(request.getUserName());
+        validUtils.validateSize(request.getUserName(), 100, "tên đăng nhập");
+        validUtils.validateFullName(request.getFullName());
+        validUtils.validateSize(request.getFullName(), 200, "Họ và tên");
+        validUtils.validatePassword(request.getPassword());
+        validUtils.validatePhone(request.getPhone());
+        validUtils.validateNumber(request.getRole(), Constants.ROLE);
+        validUtils.validateUserCode(request.getUserCode());
+        validUtils.validateSize(request.getUserCode(), 100, "mã nhân viên");
+
+//        validUtils.validateZone(request.getBranch(), ZoneEnum.BRANCH);
+    }
+
+    public void validateCreateArea(AreaRequest areaRequest) {
+        String fieldName = "tên khu vực";
+        validUtils.validateZone(areaRequest.getAid(), ZoneEnum.AREA);
+        validUtils.validateDefault(areaRequest.getName(), fieldName);
+        validUtils.validateSize(areaRequest.getAid(), 11, "Mã khu vực");
+        validUtils.validateSize(areaRequest.getName(), 255, fieldName);
+        validUtils.validateSize(areaRequest.getDescription(), 255, Constants.DESCRIPTION);
+        validUtils.validateZone(areaRequest.getRid(), ZoneEnum.REGION);
+
+    }
+
+    public void validateCreateBranch(BranchRequest branchRequest) {
+        String fieldName = "tên phòng giao dịch";
+        String fieldAddress = "địa chỉ phòng giao dịch";
+        validUtils.validateDefault(branchRequest.getName(), fieldName);
+        validUtils.validateSize(branchRequest.getName(), 255, fieldName);
+        validUtils.validateSize(branchRequest.getBid(), 11, "Mã phòng giao dịch");
+
+        validUtils.validateZone(branchRequest.getBid(), ZoneEnum.BRANCH);
+        validUtils.validateZone(branchRequest.getAid(), ZoneEnum.AREA);
+        validUtils.validateZone(branchRequest.getRid(), ZoneEnum.REGION);
+
+        validUtils.validateAddress(branchRequest.getDetailAddress(), fieldAddress);
+        validUtils.validateSize(branchRequest.getDetailAddress(), 255, fieldAddress);
+
+        validUtils.validateNumber(branchRequest.getWardId(), Constants.WARD);
+        validUtils.validateNumber(branchRequest.getDistrictId(), Constants.DISTRICT);
+        validUtils.validateNumber(branchRequest.getProvinceId(), Constants.PROVINCE);
+    }
+
+    public void validateUpdateBranch(BranchRequest branchRequest) {
+        String fieldName = "tên phòng giao dịch";
+        String fieldAddress = "địa chỉ phòng giao dịch";
+        validUtils.validateZone(branchRequest.getBid(), ZoneEnum.BRANCH);
+
+        validUtils.validateDefault(branchRequest.getName(), fieldName);
+        validUtils.validateSize(branchRequest.getName(), 255, fieldName);
+
+        validUtils.validateZone(branchRequest.getAid(), ZoneEnum.AREA);
+        validUtils.validateZone(branchRequest.getRid(), ZoneEnum.REGION);
+
+        validUtils.validateAddress(branchRequest.getDetailAddress(), fieldAddress);
+        validUtils.validateSize(branchRequest.getDetailAddress(), 255, fieldAddress);
+
+        validUtils.validateNumber(branchRequest.getWardId(), Constants.WARD);
+        validUtils.validateNumber(branchRequest.getDistrictId(), Constants.DISTRICT);
+        validUtils.validateNumber(branchRequest.getProvinceId(), Constants.PROVINCE);
+
+    }
+
+    public void validateUpdateAdminUser(AdminUserRequest request) {
+        validUtils.validateNumber(request.getUserId(), Constants.USER_ID);
+        validUtils.validateUsername(request.getUserName());
+        validUtils.validateSize(request.getUserName(), 100, "tên đăng nhập");
+        validUtils.validateFullName(request.getFullName());
+        validUtils.validateSize(request.getFullName(), 255, "Họ và tên");
+        validUtils.validatePhone(request.getPhone());
+        validUtils.validateNumber(request.getRole(), Constants.ROLE);
+        validUtils.validateUserCode(request.getUserCode());
+        validUtils.validateSize(request.getUserCode(), 100, "mã nhân viên");
+        validUtils.validateZone(request.getBranch(), ZoneEnum.BRANCH);
+    }
+
+    public void validateChangePassword(ChangePasswordRequest request) {
+        validUtils.validateChangePassword(request);
+    }
+
+    public void validateUpdateArea(AreaRequest areaRequest) {
+        String fieldName = "tên khu vực";
+        validUtils.validateDefault(areaRequest.getName(), fieldName);
+        validUtils.validateSize(areaRequest.getName(), 255, fieldName);
+        validUtils.validateZone(areaRequest.getRid(), ZoneEnum.REGION);
+        validUtils.validateZone(areaRequest.getAid(), ZoneEnum.AREA);
+        validUtils.validateSize(areaRequest.getDescription(), 255, "Mô tả");
+    }
+
+    public void validateGetVehicleOptional(VehicleDTO request) {
+        if (ObjectUtils.isEmpty(request)) {
+            throw new LendbizException("Giá trị đầu vào không để trống");
+        }
+        List<String> vehicleRequestType = List.of("TYPE", "COMPANY", "VEHICLE");
+        if (ObjectUtils.isEmpty(request.getRequestType()) || !vehicleRequestType.contains(request.getRequestType())) {
+            throw new LendbizException("Giá trị requestType không hợp lệ");
+        }
+
+        if (request.getRequestType().equalsIgnoreCase("COMPANY")) {
+            validUtils.validateNumber(request.getTypeId(), "type_id");
+        }
+        if (request.getRequestType().equalsIgnoreCase("VEHICLE")) {
+            validUtils.validateNumber(request.getTypeId(), "type_id");
+            validUtils.validateNumber(request.getCompanyId(), "company_id");
+        }
+    }
+
+    public void validateCreateVehicle(VehicleDTO request) {
+        if (ObjectUtils.isEmpty(request)) {
+            throw new LendbizException("Giá trị đầu vào không để trống");
+        }
+        validUtils.validateNumber(request.getCompanyId(), "company_id");
+        validUtils.validateAddress(request.getName(), "name");
+        validUtils.validateNumber(request.getPrice(), "price");
+    }
+
+    public void validateUpdateVehicle(VehicleDTO request) {
+        validUtils.validateNumber(request.getId(), "id");
+        validateCreateVehicle(request);
+    }
+
+    public void getBranchByDistrict(BranchRequest request) {
+        if (ObjectUtils.isEmpty(request)) {
+            throw new LendbizException("Giá trị đầu vào không để trống");
+        }
+        validUtils.validateNumber(request.getDid(), Constants.DISTRICT);
+    }
+	
+	
+	
+	////
+	
+	
+	
+	package com.technology.apigateway.utils;
+
+public interface PckSql {
+    String pck_admin = "pck_admin";
+    String pck_order = "quang_test";
+    String pck_customer = "pck_customer";
+    String pck_vehicle = "pck_vehicle";
+
+    String createApiToken = "{call pck_admin.create_api_token(?,?,?,?,?)}";
+    String getAllRegion = "{call pck_admin.get_all_region(?)}";
+    String createArea = "{call pck_admin.create_area(?,?,?,?,?)}";
+    String createBranch = "{call pck_admin.create_branch(?,?,?,?,?,?,?,?,?)}";
+    String updateArea = "{call pck_admin.update_area(?,?,?,?,?)}";
+    String updateBranch = "{call pck_admin.update_branch(?,?,?,?,?,?,?,?,?)}";
+    String updateUser = "{call pck_admin.update_user(?,?,?,?,?,?,?,?,?,?,?,?,?,?)}";
+
+    String searchAdminUser = String.format("{call %s.search_admin_user(?,?,?,?,?,?,?,?,?)}", pck_admin);
+    String updateOrder = String.format("{call %s.update_order(?,?,?,?,?,?,?,?,?)}", pck_order);
+    String accountAdminUser = String.format("{call %s.account_admin_user(?,?,?)}", pck_admin);
+    String findBranchNameMisa = String.format("{call %s.find_branch_name_misa(?,?)}", pck_order);
+
+    String createUser = String.format("{call %s.create_user(?,?,?,?,?,?,?,?)}", pck_admin);
+    String getAdminUserByUsername = String.format("{call %s.get_admin_user_by_username(?,?)}", pck_admin);
+    String getInfoUserById = String.format("{call %s.get_info_user_by_id(?,?)}", pck_admin);
+    String searchArea = String.format("{call %s.search_area(?,?,?,?,?,?,?)}", pck_admin);
+    String searchBranch = String.format("{call %s.search_branch(?,?,?,?,?,?,?,?)}", pck_admin);
+    String resetPassword = String.format("{call %s.reset_password(?,?,?)}", pck_admin);
+    String getBranchByDistrict = String.format("{call %s.get_branch_by_district(?,?)}", pck_admin);
+    String getCustomerWhere = String.format("{call %s.getCustomerWhere(?,?,?,?)}", pck_customer);
+
+    // vehicle
+    String getVehicleOptional = String.format("{call %s.getVehicleOptional(?,?,?,?)}", pck_vehicle);
+    String createVehicle = String.format("{call %s.createVehicle(?,?,?,?)}", pck_vehicle);
+    String updateVehicle = String.format("{call %s.updateVehicle(?,?,?,?,?)}", pck_vehicle);
+
+    String loanFindByRegId = String.format("{call %s.loan_find_by_ref_id(?,?)}", pck_order);
+
+    //business report
+    String businessReportDaily = String.format("{call %s.get_business_daily(?,?,?,?,?,?,?,?)}", pck_order);
+    String getDetailBranch = String.format("{call %s.get_detail_branch(?,?,?,?)}", pck_order);
+    String modifierBusinessDaily = String.format("{call %s.update_business_daily(?,?,?)}", pck_order);;
+}

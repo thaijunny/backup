@@ -1,0 +1,2271 @@
+package com.technology.apigateway.service.impl;
+
+import com.technology.apigateway.constant.Constants;
+import com.technology.apigateway.constant.ErrorCode;
+import com.technology.apigateway.controller.request.BusinessRequest;
+import com.technology.apigateway.controller.request.BusinessShareholderRequest;
+import com.technology.apigateway.controller.request.BusinessUpdateRequest;
+import com.technology.apigateway.controller.request.GetBusinessRequest;
+import com.technology.apigateway.controller.request.GuardianRequest;
+import com.technology.apigateway.controller.request.LoanRegistrationExtraRequest;
+import com.technology.apigateway.controller.request.LoanRequest;
+import com.technology.apigateway.controller.request.SimilarAssetsBusinessRequest;
+import com.technology.apigateway.controller.request.loan.InformationPropertyRequest;
+import com.technology.apigateway.controller.response.BaseResponse;
+import com.technology.apigateway.controller.response.domain.WardDomain;
+import com.technology.apigateway.controller.response.loan.InformationPropertyResponse;
+import com.technology.apigateway.database.entity.AdminUser;
+import com.technology.apigateway.database.entity.Business;
+import com.technology.apigateway.database.entity.BusinessGuardianEntity;
+import com.technology.apigateway.database.entity.BusinessOwner;
+import com.technology.apigateway.database.entity.BusinessShareholder;
+import com.technology.apigateway.database.entity.BusinessWhere;
+import com.technology.apigateway.database.entity.CoVehicle;
+import com.technology.apigateway.database.entity.ListLoanRegistration;
+import com.technology.apigateway.database.entity.Loan;
+import com.technology.apigateway.database.entity.LoanRegistrationExtra;
+import com.technology.apigateway.database.entity.PagiObjEntity;
+import com.technology.apigateway.database.entity.SimilarAssetsBusiness;
+import com.technology.apigateway.database.entity.VehicleInspection;
+import com.technology.apigateway.database.entity.status.BusinessCustomerStatus;
+import com.technology.apigateway.database.entity.status.BusinessLoanRegistrationStatus;
+import com.technology.apigateway.database.entity.status.BusinessLoanStatus;
+import com.technology.apigateway.database.entity.status.BusinessStatus;
+import com.technology.apigateway.database.entity.status.LoanCarStatus;
+import com.technology.apigateway.database.repository.AdminUserRepository;
+import com.technology.apigateway.database.repository.BusinessCustomerRepository;
+import com.technology.apigateway.database.repository.BusinessGuardianRepository;
+import com.technology.apigateway.database.repository.BusinessLoanRegistrationRepository;
+import com.technology.apigateway.database.repository.BusinessLoanStatusRepository;
+import com.technology.apigateway.database.repository.BusinessOwnerRepository;
+import com.technology.apigateway.database.repository.BusinessRepository;
+import com.technology.apigateway.database.repository.BusinessShareRepository;
+import com.technology.apigateway.database.repository.BusinessStatusRepository;
+import com.technology.apigateway.database.repository.BusinessWhereRepository;
+import com.technology.apigateway.database.repository.CovehicleRepository;
+import com.technology.apigateway.database.repository.GuardiansRepository;
+import com.technology.apigateway.database.repository.LoanCarStatusRepository;
+import com.technology.apigateway.database.repository.LoanRegistrationExtraRepository;
+import com.technology.apigateway.database.repository.LoanRegistrationRepository;
+import com.technology.apigateway.database.repository.LoanRepository;
+import com.technology.apigateway.database.repository.LoanStatusRepository;
+import com.technology.apigateway.database.repository.UserFileRepository;
+import com.technology.apigateway.database.repository.VehInspectionRepository;
+import com.technology.apigateway.database.repository.WardRepository;
+import com.technology.apigateway.database.repository.loan.LoanRegDetailRepository;
+import com.technology.apigateway.exception.BusinessException;
+import com.technology.apigateway.helper.BusinessContractRender;
+import com.technology.apigateway.models.InformationPropertyItemDTO;
+import com.technology.apigateway.models.loanDTO.LoanScheduleDTO;
+import com.technology.apigateway.packages.PCK_LOAN;
+import com.technology.apigateway.packages.PKG_HELPER;
+import com.technology.apigateway.service.BusinessService;
+import com.technology.apigateway.service.FilesStorageService;
+import com.technology.apigateway.utils.DateValidator;
+import com.technology.apigateway.utils.ErrorCodeUtil;
+import com.technology.apigateway.utils.PdfUtilsService;
+import com.technology.apigateway.utils.ValidUtils;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.extern.log4j.Log4j2;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.FileUtils;
+import org.springframework.beans.BeanUtils;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.FileCopyUtils;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
+import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+@Log4j2
+@Service
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+public class BusinessServiceImpl extends BaseResponse implements BusinessService {
+
+    BusinessStatusRepository businessStatusRepository;
+
+    BusinessGuardianRepository businessGuardianRepository;
+
+    BusinessRepository businessRepository;
+
+    BusinessOwnerRepository businessOwnerRepository;
+
+    BusinessShareRepository businessShareRepository;
+
+    CovehicleRepository coVehicleRepository;
+
+    LoanRegistrationExtraRepository loanRegistrationExtraRepository;
+
+    VehInspectionRepository vehInspectionRepository;
+
+    LoanRegDetailRepository loanRegDetailRepository;
+
+    BusinessWhereRepository businessWhereRepository;
+
+    LoanCarStatusRepository loanCarStatusRepository;
+
+    BusinessCustomerRepository businessCustomerRepository;
+
+    BusinessLoanRegistrationRepository businessLoanRegistrationRepository;
+
+    AdminUserRepository adminUserRepository;
+
+    LoanRepository loanRepository;
+
+    LoanRegistrationRepository loanRegistrationRepository;
+
+    FilesStorageService filesStorageService;
+
+    BusinessLoanStatusRepository businessLoanStatusRepository;
+
+    GuardiansRepository guardiansRepository;
+
+    PdfUtilsService pdfUtilsService;
+
+    private UserFileRepository fileRepository;
+
+    LoanStatusRepository loanStatusRepository;
+
+    WardRepository wardRepository;
+
+    PCK_LOAN pck_loan;
+
+    PKG_HELPER pkg_helper;
+
+    DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+    Date curdate = new Date();
+
+    @Override
+    public ResponseEntity<?> createBusiness(BusinessRequest businessRequest) {
+        validateBusinessRequest(businessRequest);
+        DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        String idDate = LocalDate.parse(businessRequest.getIdDate(), inputFormatter).format(outputFormatter);
+        String businessOwnerIdDate = LocalDate.parse(businessRequest.getBnIdDate(), inputFormatter).format(outputFormatter);
+        String businessOwnerDob = LocalDate.parse(businessRequest.getBnDob(), inputFormatter).format(outputFormatter);
+        BusinessCustomerStatus businessCustomerStatus = businessCustomerRepository.createCustomer(
+                businessRequest.getFullName(),
+                businessRequest.getMobile(),
+                businessRequest.getDob(),
+                businessRequest.getIdType(),
+                businessRequest.getIdNumber(),
+                idDate,
+                businessRequest.getIdPlace(),
+                businessRequest.getIdExpired(),
+                businessRequest.getAddress(),
+                businessRequest.getWardId(),
+                businessRequest.getDistrictId(),
+                businessRequest.getProvinceId(),
+                businessRequest.getEmail(),
+                businessRequest.getMarried(),
+                businessRequest.getProfession(),
+                businessRequest.getEducation(),
+                "2",
+                businessRequest.getStatus(),
+                businessRequest.getCreatedDate(),
+                businessRequest.getIncome(),
+                businessRequest.getResidency(),
+                businessRequest.getResidencyTime(),
+                businessRequest.getDependentPerson(),
+                businessRequest.getWorkingPeriod(),
+                businessRequest.getResidenceAddress(),
+                businessRequest.getResidenceWardId(),
+                businessRequest.getResidenceDistrictId(),
+                businessRequest.getResidenceProvinceId(),
+                businessRequest.getBankName(),
+                businessRequest.getBankAccountNumber(),
+                businessRequest.getGender(),
+                businessRequest.getRelationshipWithFiny(),
+                businessRequest.getWorkAddress(),
+                businessRequest.getNameCompany(),
+                businessRequest.getEthics(),
+                businessRequest.getGuardName(),
+                businessRequest.getGuardBirth(),
+                businessRequest.getGuardMobile(),
+                businessRequest.getGuardMaritalStatus(),
+                businessRequest.getGuardIdNumber(),
+                businessRequest.getGuardIdDate(),
+                businessRequest.getGuardIdAddress(),
+                businessRequest.getGuardIdPlace(),
+                businessRequest.getGuardAddress(),
+                businessRequest.getGuardStatusAddress(),
+                businessRequest.getGuardCurrentAddress(),
+                businessRequest.getGuardIsFieldWork(),
+                businessRequest.getGuardRelationship(),
+                businessRequest.getVehUseFor(),
+                businessRequest.getVehCrack(),
+                businessRequest.getVehScratch(),
+                businessRequest.getVehOthersState(),
+                businessRequest.getDescriptionWork()
+        );
+
+        String custId = businessCustomerStatus.getDescription();
+        log.info("MA KHACH HANG: " + custId);
+
+        if (businessCustomerStatus.getStatus().equals("01")) {
+            return response(toResult(businessCustomerStatus));
+        }
+
+        businessStatusRepository.createCustomerCare(
+                Integer.parseInt(custId),
+                businessRequest.getCareId(),
+                businessRequest.getCareType());
+
+        String vehType = businessRequest.getLoanRegistrationExtra().get(0).getVehicleType();
+        // Tạo hồ sơ vay
+        BusinessLoanRegistrationStatus businessLoanRegistrationStatus = businessLoanRegistrationRepository.createLoanRegistration(
+                Integer.parseInt(custId),
+                vehType,
+                businessRequest.getVehicleId(),
+                businessRequest.getVehicleNumber(),
+                businessRequest.getRegistrationNumber(),
+                businessRequest.getEngineNumber(),
+                businessRequest.getChassisNumber(),
+                businessRequest.getVehiclePrice(),
+                businessRequest.getLoanAmount(),
+                businessRequest.getTerm(),
+                businessRequest.getSaleId(),
+                businessRequest.getSaleNote(),
+                "4",
+                businessRequest.getTermType(),
+                businessRequest.getVehicleOwnerName(),
+                businessRequest.getVehicleColor(),
+                businessRequest.getAddressVehicleDocuments(),
+                businessRequest.getLoanType(),
+                businessRequest.getVehicleOrigin(),
+                businessRequest.getVehicleRegistrationIssued(),
+                businessRequest.getVehicleRegistrationDate(),
+                businessRequest.getPurposeUsingLoan(),
+                businessRequest.getVehicleBrand(),
+                businessRequest.getPayType(),
+                businessRequest.getFuel(),
+                businessRequest.getNumberPeopleAllow());
+
+        if (businessLoanRegistrationStatus.getStatus().equals("01")) {
+            return response(toResult(businessLoanRegistrationStatus));
+        }
+        Integer loanRegistrationId = Integer.parseInt(businessLoanRegistrationStatus.getDescription());
+
+        List<LoanRegistrationExtraRequest> registrationExtraRequests = businessRequest.getLoanRegistrationExtra();
+        if (registrationExtraRequests != null && !registrationExtraRequests.isEmpty()) {
+            validateLoanCarList(registrationExtraRequests);
+            for (int i = 0; i < registrationExtraRequests.size(); i++) {
+                String vehicleRegisDate = LocalDate.parse(registrationExtraRequests.get(i).getVehicleRegistrationDate(), inputFormatter).format(outputFormatter);
+                LoanRegistrationExtraRequest loanExtra = registrationExtraRequests.get(i);
+                LoanCarStatus loanCarStatus = loanCarStatusRepository.createLoanCar(
+                        loanRegistrationId,
+                        loanExtra.getVehicleType(),
+                        loanExtra.getVehicleId(),
+                        loanExtra.getVehicleNumber(),
+                        loanExtra.getVehicleBrand(),
+                        loanExtra.getRegistrationNumber(),
+                        loanExtra.getEngineNumber(),
+                        loanExtra.getChassisNumber(),
+                        loanExtra.getModelCode(),
+                        loanExtra.getVehicleOrigin(),
+                        loanExtra.getAddressVehicleDocuments(),
+                        loanExtra.getVehicleColor(),
+                        loanExtra.getFuel(),
+                        loanExtra.getNumberPeopleAllow(),
+                        loanExtra.getVehicleRegistrationIssued(),
+                        vehicleRegisDate,
+                        loanExtra.getVehiclePrice(),
+                        loanExtra.getVehicleName(),
+                        loanExtra.getLoanPrice());
+                Integer loanRegCarId = loanCarStatus.getId();
+                String regPeriodDate = null;
+                String rawRegPeriod = registrationExtraRequests.get(i).getRegPeriod();
+                if (rawRegPeriod != null && !rawRegPeriod.isEmpty()) {
+                    regPeriodDate = LocalDate.parse(rawRegPeriod, inputFormatter).format(outputFormatter);
+                }
+                businessStatusRepository.createVehInspection(
+                        regPeriodDate,
+                        loanExtra.getRegLoad(),
+                        loanExtra.getVehicleInspectionModelCode(),
+                        loanExtra.getTransPor(),
+                        loanExtra.getRenovation(),
+                        loanRegCarId,
+                        loanExtra.getRegSeriNumber());
+
+                businessStatusRepository.createCoVehicleBusiness(
+                        Integer.parseInt(custId),
+                        loanRegCarId,
+                        loanExtra.getVehUseFor(),
+                        loanExtra.getVehOthersState(),
+                        loanExtra.getBdmm(),
+                        loanExtra.getBt(),
+                        loanExtra.getDbm(),
+                        loanExtra.getDkmn(),
+                        loanExtra.getRrdn(),
+                        loanExtra.getTngt(),
+                        loanExtra.getTk(),
+                        loanExtra.getVehYearManufacture(),
+                        loanExtra.getSanction(),
+                        loanExtra.getCommercial(),
+                        loanExtra.getMarket(),
+                        loanExtra.getVehRenovation());
+
+                List<SimilarAssetsBusinessRequest> similarAssetsRequests = loanExtra.getSimilarAssets();
+                if (similarAssetsRequests != null && !similarAssetsRequests.isEmpty()) {
+                    for (SimilarAssetsBusinessRequest similarAssetRequest : similarAssetsRequests) {
+                        businessStatusRepository.createSimilarAssetsBusiness(
+                                loanRegCarId,
+                                similarAssetRequest.getValue(),
+                                similarAssetRequest.getLinkWebsite());
+                    }
+                }
+            }
+        }
+
+        // Tạo Chủ DN
+        BusinessStatus businessStatus = businessStatusRepository.createBusinessOwner(
+                Integer.parseInt(custId),
+                businessRequest.getBnFullName(),
+                businessRequest.getBnGender(),
+                businessRequest.getBnMobile(),
+                businessOwnerDob,
+                businessRequest.getBnIdNumber(),
+                businessOwnerIdDate,
+                businessRequest.getBnIdPlace(),
+                businessRequest.getBnMaritalStatus(),
+                businessRequest.getBnWardId(),
+                businessRequest.getBnDistrictId(),
+                businessRequest.getBnProvinceId(),
+                businessRequest.getBnCurrentAddress(),
+                businessRequest.getBnResidenceWardId(),
+                businessRequest.getBnResidenceDistrictId(),
+                businessRequest.getBnResidenceProvinceId(),
+                businessRequest.getBnResidenceAddress(),
+                businessRequest.getBnLoanStatusFiny(),
+                loanRegistrationId);
+        if (businessStatus.getStatus().equals("01")) {
+            return response(toResult(businessStatus));
+        }
+
+        // Tạo Thông tin DN
+        businessStatusRepository.createCustomerExtra(
+                Integer.parseInt(custId),
+                businessRequest.getWebsite(),
+                businessRequest.getBankAccountName(),
+                businessRequest.getRatio(),
+                businessRequest.getBusinessYear(),
+                businessRequest.getNumberWorking(),
+                businessRequest.getBusinessOption(),
+                businessRequest.getBusinessProduct(),
+                businessRequest.getDescribeCustomer(),
+                businessRequest.getSellAddress(),
+                businessRequest.getProductionAddress(),
+                businessRequest.getIncome(),
+                businessRequest.getProfit(),
+                businessRequest.getActiveStatus(),
+                businessRequest.getStatusBusiness(),
+                businessRequest.getStatusFiny(),
+                loanRegistrationId,
+                businessRequest.getProfessionBusiness());
+
+
+        List<BusinessShareholderRequest> businessShareholderRequests = businessRequest.getBusinessShareholder();
+        if (businessShareholderRequests != null && !businessShareholderRequests.isEmpty()) {
+            validateShareholderList(businessShareholderRequests);
+            for (int i = 0; i < businessShareholderRequests.size(); i++) {
+                String businessShareHolderIdDate = LocalDate.parse(businessShareholderRequests.get(i).getShIdDate(), inputFormatter).format(outputFormatter);
+                String businessShareHolderDob = LocalDate.parse(businessShareholderRequests.get(i).getShDob(), inputFormatter).format(outputFormatter);
+                BusinessShareholderRequest shareholder = businessShareholderRequests.get(i);
+                BusinessStatus businessStatus1 = businessStatusRepository.createShareholder(
+                        Integer.parseInt(custId),
+                        shareholder.getShFullName(),
+                        shareholder.getShGender(),
+                        shareholder.getShMobile(),
+                        businessShareHolderDob,
+                        shareholder.getShIdNumber(),
+                        businessShareHolderIdDate,
+                        shareholder.getShIdPlace(),
+                        shareholder.getShMaritalStatus(),
+                        shareholder.getShWardId(),
+                        shareholder.getShDistrictId(),
+                        shareholder.getShProvinceId(),
+                        shareholder.getShCurrentAddress(),
+                        shareholder.getShResidenceWardId(),
+                        shareholder.getShResidenceDistrictId(),
+                        shareholder.getShResidenceProvinceId(),
+                        shareholder.getShResidenceAddress(),
+                        shareholder.getShLoanStatusFiny(),
+                        loanRegistrationId);
+                if (businessStatus1.getStatus().equals("01")) {
+                    return response(toResult(businessStatus1));
+                }
+            }
+        }
+
+        // Tạo người bảo lãnh
+        List<GuardianRequest> guardianRequests = businessRequest.getBusinessGuardians();
+        if (guardianRequests != null && !guardianRequests.isEmpty()) {
+            validateGuardianList(guardianRequests);
+            for (int i = 0; i < guardianRequests.size(); i++) {
+                String guardianIdDate = LocalDate.parse(guardianRequests.get(i).getGuardIdDate(), inputFormatter).format(outputFormatter);
+                String guardianBirthday = LocalDate.parse(guardianRequests.get(i).getGuardBirth(), inputFormatter).format(outputFormatter);
+                GuardianRequest businessGuardians = guardianRequests.get(i);
+                BusinessStatus businessStatus2 = businessStatusRepository.createGuardian(
+                        Integer.parseInt(custId),
+                        businessGuardians.getGuardName(),
+                        guardianBirthday,
+                        businessGuardians.getGuardMobile(),
+                        businessGuardians.getGuardMaritalStatus(),
+                        businessGuardians.getGuardIdNumber(),
+                        guardianIdDate,
+                        businessGuardians.getGuardIdAddress(),
+                        businessGuardians.getGuardIdPlace(),
+                        businessGuardians.getGuardAddress(),
+                        businessGuardians.getGuardStatusAddress(),
+                        businessGuardians.getGuardCurrentAddress(),
+                        businessGuardians.getGuardIsFieldWork(),
+                        businessGuardians.getGuardRelationship(),
+                        loanRegistrationId,
+                        businessGuardians.getGuardResidenceWardId(),
+                        businessGuardians.getGuardResidenceDistrictId(),
+                        businessGuardians.getGuardResidenceProvinceId(),
+                        businessGuardians.getGuardWardId(),
+                        businessGuardians.getGuardDistrictId(),
+                        businessGuardians.getGuardProvinceId(),
+                        businessGuardians.getGuardGender(),
+                        businessGuardians.getGuardLoanStatusFiny());
+
+                if (businessStatus2.getStatus().equals("01")) {
+                    return response(toResult(businessStatus2));
+                }
+            }
+        }
+
+        int proffession = 1;
+        int age = 1;
+        int residency = 1;
+        int residencyTime = 1;
+        int maritalstatus = 1;
+        int depedency = 1;
+        int relwithfiny = 1;
+        int incomeprovetype = 1;
+        int income = 1;
+        int workingtime = 1;
+        int insurance = 1;
+        int assettype = 1;
+        int assetvalue = 1;
+        int assetusefor = 1;
+
+        businessStatusRepository.createScoring(Integer.valueOf(custId), proffession,
+                age,
+                residency,
+                residencyTime,
+                maritalstatus,
+                depedency,
+                relwithfiny,
+                incomeprovetype,
+                income,
+                workingtime,
+                insurance,
+                assettype,
+                assetvalue,
+                assetusefor);
+        businessStatusRepository.calScoring(Integer.valueOf(custId));
+        Map<String, Object> result = new HashMap<>();
+        result.put("status", "00");
+        result.put("description", "tạo mới thành công hồ sơ vay " + businessLoanRegistrationStatus.getDescription());
+        return response(toResult(result));
+    }
+
+    @Override
+    public BusinessStatus createShareholder(BusinessShareholderRequest businessShareholderRequest) {
+        BusinessStatus businessStatus;
+        DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        if (businessShareholderRequest == null) {
+            throw new BusinessException(ErrorCode.GUARDIAN_LIST_EMPTY, ErrorCode.GUARDIAN_LIST_EMPTY_DESCRIPTION);
+        }
+        validateShareHolder(businessShareholderRequest);
+        String businessShareHolderIdDate = LocalDate.parse(businessShareholderRequest.getShIdDate(), inputFormatter).format(outputFormatter);
+        String businessShareHolderDob = LocalDate.parse(businessShareholderRequest.getShDob(), inputFormatter).format(outputFormatter);
+        businessStatus = businessStatusRepository.createShareholder(
+                businessShareholderRequest.getCustId(),
+                businessShareholderRequest.getShFullName(),
+                businessShareholderRequest.getShGender(),
+                businessShareholderRequest.getShMobile(),
+                businessShareHolderDob,
+                businessShareholderRequest.getShIdNumber(),
+                businessShareHolderIdDate,
+                businessShareholderRequest.getShIdPlace(),
+                businessShareholderRequest.getShMaritalStatus(),
+                businessShareholderRequest.getShWardId(),
+                businessShareholderRequest.getShDistrictId(),
+                businessShareholderRequest.getShProvinceId(),
+                businessShareholderRequest.getShCurrentAddress(),
+                businessShareholderRequest.getShResidenceWardId(),
+                businessShareholderRequest.getShResidenceDistrictId(),
+                businessShareholderRequest.getShResidenceProvinceId(),
+                businessShareholderRequest.getShResidenceAddress(),
+                businessShareholderRequest.getShLoanStatusFiny(),
+                businessShareholderRequest.getRegId());
+        return businessStatus;
+    }
+
+    @Override
+    public BusinessStatus createGuardians(GuardianRequest guardianRequests) {
+        BusinessStatus businessStatus;
+        DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        if (guardianRequests == null) {
+            throw new BusinessException(ErrorCode.GUARDIAN_LIST_EMPTY, ErrorCode.GUARDIAN_LIST_EMPTY_DESCRIPTION);
+        }
+        validateGuardian(guardianRequests);
+        String guardianIdDate = LocalDate.parse(guardianRequests.getGuardIdDate(), inputFormatter).format(outputFormatter);
+        String guardianBirthday = LocalDate.parse(guardianRequests.getGuardBirth(), inputFormatter).format(outputFormatter);
+        businessStatus = businessStatusRepository.createGuardian(
+                guardianRequests.getUserId(),
+                guardianRequests.getGuardName(),
+                guardianBirthday,
+                guardianRequests.getGuardMobile(),
+                guardianRequests.getGuardMaritalStatus(),
+                guardianRequests.getGuardIdNumber(),
+                guardianIdDate,
+                guardianRequests.getGuardIdAddress(),
+                guardianRequests.getGuardIdPlace(),
+                guardianRequests.getGuardAddress(),
+                guardianRequests.getGuardStatusAddress(),
+                guardianRequests.getGuardCurrentAddress(),
+                guardianRequests.getGuardIsFieldWork(),
+                guardianRequests.getGuardRelationship(),
+                guardianRequests.getRegId(),
+                guardianRequests.getGuardResidenceWardId(),
+                guardianRequests.getGuardResidenceDistrictId(),
+                guardianRequests.getGuardResidenceProvinceId(),
+                guardianRequests.getGuardWardId(),
+                guardianRequests.getGuardDistrictId(),
+                guardianRequests.getGuardProvinceId(),
+                guardianRequests.getGuardGender(),
+                guardianRequests.getGuardLoanStatusFiny());
+        return businessStatus;
+    }
+
+    @Override
+    public ResponseEntity<?> createLoanCar(LoanRegistrationExtraRequest request) {
+        LoanCarStatus loanCarStatus;
+        DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        try {
+            if (request == null) {
+                throw new BusinessException(ErrorCode.SHAREHOLDER_LIST_EMPTY, ErrorCode.SHAREHOLDER_LIST_EMPTY_DESCRIPTION);
+            }
+            validateLoanCar(request);
+            String vehicleRegisDate = LocalDate.parse(request.getVehicleRegistrationDate(), inputFormatter).format(outputFormatter);
+            LoanRegistrationExtraRequest loanExtra = request;
+            loanCarStatus = loanCarStatusRepository.createLoanCar(
+                    loanExtra.getLoanRegId(),
+                    loanExtra.getVehicleType(),
+                    loanExtra.getVehicleId(),
+                    loanExtra.getVehicleNumber(),
+                    loanExtra.getVehicleBrand(),
+                    loanExtra.getRegistrationNumber(),
+                    loanExtra.getEngineNumber(),
+                    loanExtra.getChassisNumber(),
+                    loanExtra.getModelCode(),
+                    loanExtra.getVehicleOrigin(),
+                    loanExtra.getAddressVehicleDocuments(),
+                    loanExtra.getVehicleColor(),
+                    loanExtra.getFuel(),
+                    loanExtra.getNumberPeopleAllow(),
+                    loanExtra.getVehicleRegistrationIssued(),
+                    vehicleRegisDate,
+                    loanExtra.getVehiclePrice(),
+                    loanExtra.getVehicleName(),
+                    loanExtra.getLoanPrice());
+
+            Integer loanRegCarId = loanCarStatus.getId();
+            String regPeriodDate = null;
+            String rawRegPeriod = request.getRegPeriod();
+            if (rawRegPeriod != null && !rawRegPeriod.isEmpty()) {
+                regPeriodDate = LocalDate.parse(rawRegPeriod, inputFormatter).format(outputFormatter);
+            }
+            businessStatusRepository.createVehInspection(
+                    regPeriodDate,
+                    loanExtra.getRegLoad(),
+                    loanExtra.getVehicleInspectionModelCode(),
+                    loanExtra.getTransPor(),
+                    loanExtra.getRenovation(),
+                    loanRegCarId,
+                    loanExtra.getRegSeriNumber());
+
+            businessStatusRepository.createCoVehicleBusiness(
+                    loanExtra.getCustomerId(),
+                    loanRegCarId,
+                    loanExtra.getVehUseFor(),
+                    loanExtra.getVehOthersState(),
+                    loanExtra.getBdmm(),
+                    loanExtra.getBt(),
+                    loanExtra.getDbm(),
+                    loanExtra.getDkmn(),
+                    loanExtra.getRrdn(),
+                    loanExtra.getTngt(),
+                    loanExtra.getTk(),
+                    loanExtra.getVehYearManufacture(),
+                    loanExtra.getSanction(),
+                    loanExtra.getCommercial(),
+                    loanExtra.getMarket(),
+                    loanExtra.getVehRenovation());
+
+            List<SimilarAssetsBusinessRequest> similarAssetsRequests = loanExtra.getSimilarAssets();
+            if (similarAssetsRequests != null && !similarAssetsRequests.isEmpty()) {
+                for (SimilarAssetsBusinessRequest similarAssetRequest : similarAssetsRequests) {
+                    businessStatusRepository.createSimilarAssetsBusiness(
+                            loanRegCarId,
+                            similarAssetRequest.getValue(),
+                            similarAssetRequest.getLinkWebsite());
+                }
+            }
+
+        } catch (Exception e) {
+            throw new BusinessException(ErrorCode.UNKNOWN_ERROR, e.getMessage());
+        }
+        Map<String, String> data = new HashMap<>();
+        data.put("status", "00");
+        data.put("description", "Tạo tài sản thành công");
+        return response(toResult(data));
+    }
+
+    @Override
+    public BusinessStatus createVehInspection(List<LoanRegistrationExtraRequest> request) {
+        BusinessStatus businessStatus = new BusinessStatus();
+        DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        try {
+            if (request != null || !request.isEmpty()) {
+                for (int i = 0; i < request.size(); i++) {
+                    String regPeriodDate = null;
+                    String rawRegPeriod = request.get(i).getRegPeriod();
+                    if (rawRegPeriod != null && !rawRegPeriod.isEmpty()) {
+                        regPeriodDate = LocalDate.parse(rawRegPeriod, inputFormatter).format(outputFormatter);
+                    }
+                    LoanRegistrationExtraRequest vehInspection = request.get(i);
+                    businessStatus = businessStatusRepository.createVehInspection(
+                            regPeriodDate,
+                            vehInspection.getRegLoad(),
+                            vehInspection.getVehicleInspectionModelCode(),
+                            vehInspection.getTransPor(),
+                            vehInspection.getRenovation(),
+                            vehInspection.getLoanCarId(),
+                            vehInspection.getRegSeriNumber());
+                }
+            }
+        } catch (Exception e) {
+            throw new BusinessException(ErrorCode.UNKNOWN_ERROR, e.getMessage());
+        }
+        return businessStatus;
+    }
+
+    @Override
+    public BusinessStatus createCoVehicleBusiness(List<LoanRegistrationExtraRequest> request) {
+        BusinessStatus businessStatus = new BusinessStatus();
+        try {
+            if (request != null || !request.isEmpty()) {
+                for (int i = 0; i < request.size(); i++) {
+                    LoanRegistrationExtraRequest coVehicleBusiness = request.get(i);
+                    businessStatus = businessStatusRepository.createCoVehicleBusiness(
+                            coVehicleBusiness.getCustomerId(),
+                            coVehicleBusiness.getLoanCarId(),
+                            coVehicleBusiness.getVehUseFor(),
+                            coVehicleBusiness.getVehOthersState(),
+                            coVehicleBusiness.getBdmm(),
+                            coVehicleBusiness.getBt(),
+                            coVehicleBusiness.getDbm(),
+                            coVehicleBusiness.getDkmn(),
+                            coVehicleBusiness.getRrdn(),
+                            coVehicleBusiness.getTngt(),
+                            coVehicleBusiness.getTk(),
+                            coVehicleBusiness.getVehYearManufacture(),
+                            coVehicleBusiness.getSanction(),
+                            coVehicleBusiness.getCommercial(),
+                            coVehicleBusiness.getMarket(),
+                            coVehicleBusiness.getVehRenovation());
+                }
+            }
+        } catch (Exception e) {
+            throw new BusinessException(ErrorCode.UNKNOWN_ERROR, e.getMessage());
+        }
+        return businessStatus;
+    }
+
+    @Override
+    public BusinessStatus createSimilarAssetsBusiness(List<SimilarAssetsBusinessRequest> request) {
+        BusinessStatus businessStatus = new BusinessStatus();
+        try {
+            if (request != null || !request.isEmpty()) {
+                for (int i = 0; i < request.size(); i++) {
+                    SimilarAssetsBusinessRequest similarAssetRequest = request.get(i);
+                    businessStatus = businessStatusRepository.createSimilarAssetsBusiness(
+                            similarAssetRequest.getLoanRegCarId(),
+                            similarAssetRequest.getValue(),
+                            similarAssetRequest.getLinkWebsite());
+                }
+            }
+        } catch (Exception e) {
+            throw new BusinessException(ErrorCode.UNKNOWN_ERROR, e.getMessage());
+        }
+        return businessStatus;
+    }
+
+    @Override
+    @Transactional
+    public BusinessLoanStatus createLoan(LoanRequest loanRequest) {
+
+        BusinessLoanStatus loanStatus;
+        String urlOutput = "hoso" + Constants.FOLDER_SEPERATE + loanRequest.getCustId() + Constants.FOLDER_SEPERATE + "contracts" + Constants.FOLDER_SEPERATE;
+
+        loanStatus = businessLoanStatusRepository.createLoan (
+            loanRequest.getRegId(),
+            loanRequest.getCustId(),
+            loanRequest.getLndate(),
+            loanRequest.getInsuranceFee(),
+            loanRequest.getGuaranteeTranFee(),
+            loanRequest.getExpertiseFeePrePaid(),
+            Double.parseDouble(new DecimalFormat("##.##").format(loanRequest.getChangeRate() * 12)),
+            Double.parseDouble(new DecimalFormat("##.##").format(loanRequest.getAssetManagementFeeRate() * 12)),
+            Double.parseDouble(new DecimalFormat("##.##").format(loanRequest.getChangeRateOvd())),
+            Double.parseDouble(new DecimalFormat("##.##").format(loanRequest.getExpertiseFeeRate() * 12)),
+            Double.parseDouble(new DecimalFormat("##.##").format(loanRequest.getPrePaymentFeeRate())),
+            loanRequest.getDocumentNo()
+        );
+
+        if (loanStatus.getStatus().equals("01")) {
+            throw new BusinessException(ErrorCode.UNKNOWN_ERROR, loanStatus.getDescription());
+        }
+        List<Loan> lstLoan = null;
+        try {
+            BusinessWhere busCustomer = businessWhereRepository.getBusinessWhere(null, null, loanRequest.getRegId());
+            List<AdminUser> lstAdmin = adminUserRepository.getAdminUserById(busCustomer.getSaleId());
+            List<ListLoanRegistration> lstLoanRegistration = loanRegistrationRepository.getListLoanRegistration(loanRequest.getRegId(), null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+            lstLoan = loanRepository.findLoanByRegId(loanRequest.getRegId());
+            List<LoanRegistrationExtra> lstLoanRegistrationExtra = loanRegistrationExtraRepository.findByLoanRegId(loanRequest.getRegId());
+            //List<GuardiansEntity> guardiansEntityList = guardiansRepository.findByRegId(loanRequest.getRegId());
+            List<LoanScheduleDTO> loanScheduleDTOList = pck_loan.getLoanScheduleFile(lstLoan.get(0).getId());
+
+            filesStorageService.init("contracts", loanRequest.getCustId().toString());
+
+            //String contractUrlInputDocx = "hoso" + Constants.FOLDER_SEPERATE + "default" + Constants.FOLDER_SEPERATE + "hopdongvaymoi_dn.docx";
+            Resource resource = new ClassPathResource("template/" + Constants.CONTRACT_DN_DOCX);
+            File tempDocx = File.createTempFile("contract_dn_", ".docx");
+            FileCopyUtils.copy(resource.getInputStream(), new FileOutputStream(tempDocx));
+            String contractUrlInputDocx = tempDocx.getAbsolutePath();
+
+            PagiObjEntity pagiObj1 = pkg_helper.fn_get_helper("LOANTYPE", "OTO", lstLoanRegistration.get(0).getLoanType().trim());
+            String prePaymentFee = pagiObj1.getTables().get(0).get("pv_prepaymentfee").toString();
+            PagiObjEntity crs = pkg_helper.fn_get_helper("CRS", "", lstLoanRegistration.get(0).getSaleId().trim());
+            String agent = crs.getTables().get(0).get("pv_agent").toString();
+            String title = crs.getTables().get(0).get("pv_title").toString();
+
+            String hopdongvay_dn = "hopdongvay_dn_" + loanRequest.getCustId() + "_" + dateFormat.format(curdate);
+
+            // Dua du lieu vao hop dong (.docx)
+            BusinessContractRender.fillDataToContract (
+                contractUrlInputDocx,
+                urlOutput + hopdongvay_dn + ".docx",
+                busCustomer,
+                lstAdmin,
+                lstLoanRegistration,
+                lstLoan,
+                lstLoanRegistrationExtra,
+                loanScheduleDTOList,
+                agent,
+                title,
+                prePaymentFee
+            );
+
+            // Dua du lieu vao hop dong (.pdf)
+            pdfUtilsService.convertPDF (
+                lstLoanRegistration.get(0).getCustId(),
+                urlOutput + hopdongvay_dn + ".docx",
+                urlOutput + hopdongvay_dn + ".pdf"
+            );
+
+            // Lưu file HĐ vào DB
+            fileRepository.insertRow (
+                hopdongvay_dn + ".docx",
+                "contract",
+                urlOutput + hopdongvay_dn + ".docx",
+                Integer.parseInt(lstLoanRegistration.get(0).getCustId()),
+                Integer.parseInt(lstLoanRegistration.get(0).getSaleId()),
+                "docx",
+                lstLoanRegistration.get(0).getId()
+            );
+
+            fileRepository.insertRow (
+                hopdongvay_dn + ".pdf",
+                "contract",
+                urlOutput + hopdongvay_dn + ".pdf",
+                Integer.parseInt(lstLoanRegistration.get(0).getCustId()),
+                Integer.parseInt(lstLoanRegistration.get(0).getSaleId()),
+                "pdf",
+                lstLoanRegistration.get(0).getId()
+            );
+
+        } catch (Exception e) {
+            if (lstLoan != null && lstLoan.size() > 0){
+                loanStatusRepository.updateLoanStatus(Integer.parseInt(lstLoan.get(0).getId()), "2");
+            }
+            throw new BusinessException("400", e.getMessage());
+        }
+        return loanStatus;
+    }
+
+    private static String encodeFileToBase64Binary(String fileName) throws IOException {
+        File file = new File(fileName);
+        byte[] encoded = Base64.encodeBase64(FileUtils.readFileToByteArray(file));
+        return new String(encoded, StandardCharsets.US_ASCII);
+    }
+
+    @Override
+    public List<InformationPropertyItemDTO> getInformationProperty(InformationPropertyRequest request) {
+        List<InformationPropertyResponse> entityList =
+                loanRegDetailRepository.getInformationProperty(request.getLoanRegistrationId());
+        Map<Integer, List<InformationPropertyResponse>> groupedByCar =
+                entityList.stream().collect(Collectors.groupingBy(InformationPropertyResponse::getLoanregcarid));
+
+        List<InformationPropertyItemDTO> dtoList = new ArrayList<>();
+
+        for (Map.Entry<Integer, List<InformationPropertyResponse>> entry : groupedByCar.entrySet()) {
+            List<InformationPropertyResponse> carData = entry.getValue();
+            InformationPropertyItemDTO dto = new InformationPropertyItemDTO();
+            BeanUtils.copyProperties(carData.get(0), dto);
+
+            List<SimilarAssetsBusiness> assets = carData.stream()
+                    // check nếu link website null hoặc value = 0 thì sẽ trả ra tài sản tương tự mảng rỗng
+                    .filter(e -> e.getLinkwebsite() != null && e.getValue() != null && e.getValue().compareTo(BigDecimal.ZERO) > 0)
+                    .map(e -> {
+                        SimilarAssetsBusiness asset = new SimilarAssetsBusiness();
+                        asset.setId(e.getId() != null ? e.getId() : 0);
+                        asset.setLoanRegCarId(e.getLoanregcarid() != null ? e.getLoanregcarid() : 0);
+                        asset.setValue(e.getValue() != null ? e.getValue() : BigDecimal.ZERO);
+                        asset.setLinkWebsite(e.getLinkwebsite());
+                        return asset;
+                    }).collect(Collectors.toList());
+
+            dto.setSimilarAssetsBusinesses(assets);
+            dtoList.add(dto);
+        }
+        return dtoList;
+    }
+
+    @Override
+    public ResponseEntity<?> updateBusinessWhere(BusinessUpdateRequest businessRequest) {
+        BusinessCustomerStatus customerStatus;
+        BusinessLoanRegistrationStatus loanRegistrationStatus;
+        BusinessStatus businessStatus;
+        BusinessStatus businessStatus1;
+        try {
+            customerStatus = updateCustomer(businessRequest);
+            if (customerStatus.getStatus().equals("01")) {
+                return response(toResult(customerStatus));
+            }
+            businessStatus1 = updateCustomerExtra(businessRequest);
+            if (businessStatus1.getStatus().equals("01")) {
+                return response(toResult(businessStatus1));
+            }
+            businessStatus = updateBusinessOwner(businessRequest);
+            if (businessStatus.getStatus().equals("01")) {
+                return response(toResult(businessStatus));
+            }
+            loanRegistrationStatus = updateLoanRegistration(businessRequest);
+            if (loanRegistrationStatus.getStatus().equals("01")) {
+                return response(toResult(loanRegistrationStatus));
+            }
+            return response(toResult(customerStatus));
+        } catch (Exception e) {
+            throw new BusinessException(ErrorCode.UNKNOWN_ERROR, e.getMessage());
+        }
+    }
+
+    @Override
+    public  ResponseEntity<?> updateLoanRegistrationExtra(LoanRegistrationExtraRequest businessRequest) {
+        try {
+            BusinessStatus businessStatus = updateLoanCars(businessRequest);
+            updateCoVehicleBusiness(businessRequest);
+            updateVehInspection(businessRequest);
+            updateSimilarAssetsBusiness(businessRequest);
+
+            Map<String, String> data = new HashMap<>();
+            data.put("status", "00");
+            data.put("description", "update tài sản " + businessRequest.getLoanCarId() + " thành công");
+            return response(toResult(data));
+//            return businessStatus;
+        } catch (Exception e) {
+            throw new BusinessException(ErrorCode.UNKNOWN_ERROR, e.getMessage());
+        }
+
+    }
+
+    @Override
+    public BusinessCustomerStatus updateCustomer(BusinessUpdateRequest businessRequest) {
+        validateBusinessUpdateRequest(businessRequest);
+        DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        String idDate = LocalDate.parse(businessRequest.getIdDate(), inputFormatter).format(outputFormatter);
+        BusinessCustomerStatus customerStatus;
+        try {
+
+            List<String> address = wardRepository.getFindBypId(businessRequest.getWardId(),businessRequest.getProvinceId());
+            if (address.isEmpty()) {
+                throw new BusinessException(ErrorCodeUtil.PROVINCE_WARD_FAIL);
+            }
+            List<String> residenceAddress = wardRepository.getFindBypId(businessRequest.getResidenceWardId(),businessRequest.getResidenceProvinceId());
+            if (residenceAddress.isEmpty()) {
+                throw new BusinessException(ErrorCodeUtil.PROVINCE_WARD_FAIL);
+            }
+            customerStatus = businessCustomerRepository.updateCustomer(
+                    businessRequest.getId(),
+                    businessRequest.getFullName(),
+                    businessRequest.getMobile(),
+                    businessRequest.getDob(),
+                    businessRequest.getIdType(),
+                    businessRequest.getIdNumber(),
+                    idDate,
+                    businessRequest.getIdPlace(),
+                    businessRequest.getIdExpired(),
+                    businessRequest.getAddress(),
+                    businessRequest.getWardId(),
+                    businessRequest.getDistrictId(),
+                    businessRequest.getProvinceId(),
+                    businessRequest.getEmail(),
+                    businessRequest.getMarried(),
+                    businessRequest.getProfession(),
+                    businessRequest.getEducation(),
+                    businessRequest.getCustType(),
+                    businessRequest.getStatus(),
+                    businessRequest.getCreatedDate(),
+                    businessRequest.getIncome(),
+                    businessRequest.getResidency(),
+                    businessRequest.getResidencyTime(),
+                    businessRequest.getDependentPerson(),
+                    businessRequest.getWorkingPeriod(),
+                    businessRequest.getResidenceAddress(),
+                    businessRequest.getResidenceWardId(),
+                    businessRequest.getResidenceDistrictId(),
+                    businessRequest.getResidenceProvinceId(),
+                    businessRequest.getBankName(),
+                    String.valueOf(businessRequest.getBankAccountNumber()),
+                    businessRequest.getGender(),
+                    businessRequest.getRelationshipWithFiny(),
+                    businessRequest.getWorkAddress(),
+                    businessRequest.getNameCompany(),
+                    businessRequest.getDescriptionWork());
+        } catch (Exception e) {
+            throw new BusinessException(ErrorCode.UNKNOWN_ERROR, e.getMessage());
+        }
+        return customerStatus;
+    }
+
+    @Override
+    public BusinessStatus updateBusinessOwner(BusinessUpdateRequest businessOwnerRequest) {
+        BusinessStatus businessStatus1;
+        DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        String businessOwnerIdDate = LocalDate.parse(businessOwnerRequest.getBnIdDate(), inputFormatter).format(outputFormatter);
+        String businessOwnerDob = LocalDate.parse(businessOwnerRequest.getBnDob(), inputFormatter).format(outputFormatter);
+        try {
+            if (businessOwnerRequest != null) {
+                List<String> bnCurrentAddress = wardRepository.getFindBypId(businessOwnerRequest.getBnWardId(),businessOwnerRequest.getBnProvinceId());
+                if (bnCurrentAddress.isEmpty()) {
+                    throw new BusinessException(ErrorCodeUtil.PROVINCE_WARD_FAIL);
+                }
+
+                List<String> bnResidenceAddress = wardRepository.getFindBypId(businessOwnerRequest.getBnResidenceWardId(),businessOwnerRequest.getResidenceProvinceId());
+                if (bnResidenceAddress.isEmpty()) {
+                    throw new BusinessException(ErrorCodeUtil.PROVINCE_WARD_FAIL);
+                }
+                businessStatus1 = businessStatusRepository.updateBusinessOwner(
+                        businessOwnerRequest.getBnFullName(),
+                        businessOwnerRequest.getBnGender(),
+                        businessOwnerRequest.getBnMobile(),
+                        businessOwnerDob,
+                        businessOwnerRequest.getBnIdNumber(),
+                        businessOwnerIdDate,
+                        businessOwnerRequest.getBnIdPlace(),
+                        businessOwnerRequest.getBnMaritalStatus(),
+                        businessOwnerRequest.getBnWardId(),
+                        businessOwnerRequest.getBnDistrictId(),
+                        businessOwnerRequest.getBnProvinceId(),
+                        businessOwnerRequest.getBnCurrentAddress(),
+                        businessOwnerRequest.getBnResidenceWardId(),
+                        businessOwnerRequest.getBnResidenceDistrictId(),
+                        businessOwnerRequest.getBnResidenceProvinceId(),
+                        businessOwnerRequest.getBnResidenceAddress(),
+                        businessOwnerRequest.getBnLoanStatusFiny(),
+                        businessOwnerRequest.getRegId());
+                return businessStatus1;
+            }
+
+        } catch (Exception e) {
+            throw new BusinessException(ErrorCode.UNKNOWN_ERROR, e.getMessage());
+        }
+        return null;
+    }
+
+    @Override
+    public BusinessStatus updateCustomerExtra(BusinessUpdateRequest businessUpdateRequest) {
+        BusinessStatus businessStatus;
+        try {
+            if (businessUpdateRequest != null) {
+                businessStatus = businessStatusRepository.updateCustomerExtra(
+                        businessUpdateRequest.getWebsite(),
+                        businessUpdateRequest.getBankAccountName(),
+                        businessUpdateRequest.getRatio(),
+                        businessUpdateRequest.getBusinessYear(),
+                        businessUpdateRequest.getNumberWorking(),
+                        businessUpdateRequest.getBusinessOption(),
+                        businessUpdateRequest.getBusinessProduct(),
+                        businessUpdateRequest.getDescribeCustomer(),
+                        businessUpdateRequest.getSellAddress(),
+                        businessUpdateRequest.getProductionAddress(),
+                        businessUpdateRequest.getIncome(),
+                        businessUpdateRequest.getProfit(),
+                        businessUpdateRequest.getActiveStatus(),
+                        businessUpdateRequest.getStatusFiny(),
+                        businessUpdateRequest.getStatusBusiness(),
+                        businessUpdateRequest.getRegId(),
+                        businessUpdateRequest.getProfessionBusiness());
+                return businessStatus;
+            }
+        } catch (Exception e) {
+            throw new BusinessException(ErrorCode.UNKNOWN_ERROR, e.getMessage());
+        }
+        return null;
+    }
+
+    @Override
+    public BusinessStatus updateShareholders(BusinessShareholderRequest shareholderRequests) {
+        validateShareHolder(shareholderRequests);
+        DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        String businessShareHolderIdDate = LocalDate.parse(shareholderRequests.getShIdDate(), inputFormatter).format(outputFormatter);
+        String businessShareHolderDob = LocalDate.parse(shareholderRequests.getShDob(), inputFormatter).format(outputFormatter);
+        BusinessStatus businessStatus;
+        try {
+            if (shareholderRequests != null) {
+                List<String> address = wardRepository.getFindBypId(shareholderRequests.getShWardId(),shareholderRequests.getShProvinceId());
+                if (address.isEmpty()) {
+                    throw new BusinessException(ErrorCodeUtil.PROVINCE_WARD_FAIL);
+                }
+                List<String> residenceAddress = wardRepository.getFindBypId(shareholderRequests.getShResidenceWardId(),shareholderRequests.getShResidenceProvinceId());
+                if (residenceAddress.isEmpty()) {
+                    throw new BusinessException(ErrorCodeUtil.PROVINCE_WARD_FAIL);
+                }
+                businessStatus = businessStatusRepository.updateShareholder(
+                        shareholderRequests.getId(),
+                        shareholderRequests.getShFullName(),
+                        shareholderRequests.getShGender(),
+                        shareholderRequests.getShMobile(),
+                        businessShareHolderDob,
+                        shareholderRequests.getShIdNumber(),
+                        businessShareHolderIdDate,
+                        shareholderRequests.getShIdPlace(),
+                        shareholderRequests.getShMaritalStatus(),
+                        shareholderRequests.getShWardId(),
+                        shareholderRequests.getShDistrictId(),
+                        shareholderRequests.getShProvinceId(),
+                        shareholderRequests.getShCurrentAddress(),
+                        shareholderRequests.getShResidenceWardId(),
+                        shareholderRequests.getShResidenceDistrictId(),
+                        shareholderRequests.getShResidenceProvinceId(),
+                        shareholderRequests.getShResidenceAddress(),
+                        shareholderRequests.getShLoanStatusFiny());
+                return businessStatus;
+            }
+
+        } catch (Exception e) {
+            throw new BusinessException(ErrorCode.UNKNOWN_ERROR, e.getMessage());
+        }
+        return null;
+    }
+
+    public BusinessLoanRegistrationStatus updateLoanRegistration(BusinessUpdateRequest businessRequest) {
+        BusinessLoanRegistrationStatus loanRegistrationStatus;
+        try {
+            loanRegistrationStatus = businessLoanRegistrationRepository.updateLoanRegistration(
+                    businessRequest.getRegId(),
+                    businessRequest.getId(),
+                    businessRequest.getVehicleType(),
+                    businessRequest.getVehicleId(),
+                    businessRequest.getVehicleNumber(),
+                    businessRequest.getRegistrationNumber(),
+                    businessRequest.getEngineNumber(),
+                    businessRequest.getChassisNumber(),
+                    businessRequest.getVehiclePrice(),
+                    businessRequest.getLoanAmount(),
+                    businessRequest.getTerm(),
+                    businessRequest.getStatus(),
+                    businessRequest.getSaleId(),
+                    businessRequest.getCoId(),
+                    businessRequest.getSaleNote(),
+                    businessRequest.getCoNote(),
+                    businessRequest.getIncomeProveType(),
+                    businessRequest.getTermType(),
+                    businessRequest.getVehicleOwnerName(),
+                    businessRequest.getVehicleColor(),
+                    businessRequest.getAddressVehicleDocuments(),
+                    businessRequest.getLoanType(),
+                    businessRequest.getVehicleOrigin(),
+                    businessRequest.getVehicleRegistrationIssued(),
+                    businessRequest.getVehicleRegistrationDate(),
+                    businessRequest.getPurposeUsingLoan(),
+                    businessRequest.getVehicleBrand(),
+                    businessRequest.getPayType(),
+                    businessRequest.getFuel(),
+                    businessRequest.getNumberPeopleAllow());
+        } catch (Exception e) {
+            throw new BusinessException(ErrorCode.UNKNOWN_ERROR, e.getMessage());
+        }
+        return loanRegistrationStatus;
+    }
+
+    @Override
+    public BusinessStatus updateLoanCars(LoanRegistrationExtraRequest loanCarRequest) {
+        validateLoanCar(loanCarRequest);
+        DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        try {
+            String vehicleRegistrationDate = LocalDate.parse(loanCarRequest.getVehicleRegistrationDate(), inputFormatter).format(outputFormatter);
+            return businessStatusRepository.updateLoanRegistrationExtra(
+                    loanCarRequest.getLoanCarId(),
+                    loanCarRequest.getVehicleType(),
+                    loanCarRequest.getVehicleId(),
+                    loanCarRequest.getVehicleNumber(),
+                    loanCarRequest.getVehicleBrand(),
+                    loanCarRequest.getRegistrationNumber(),
+                    loanCarRequest.getEngineNumber(),
+                    loanCarRequest.getChassisNumber(),
+                    loanCarRequest.getModelCode(),
+                    loanCarRequest.getVehicleOrigin(),
+                    loanCarRequest.getAddressVehicleDocuments(),
+                    loanCarRequest.getVehicleColor(),
+                    loanCarRequest.getFuel(),
+                    loanCarRequest.getNumberPeopleAllow(),
+                    loanCarRequest.getVehicleRegistrationIssued(),
+                    vehicleRegistrationDate,
+                    loanCarRequest.getVehiclePrice(),
+                    loanCarRequest.getVehicleName(),
+                    loanCarRequest.getLoanPrice()
+            );
+        } catch (Exception e) {
+            throw new BusinessException(ErrorCode.UNKNOWN_ERROR, e.getMessage());
+        }
+    }
+
+    @Override
+    public BusinessStatus updateVehInspection(LoanRegistrationExtraRequest inspection) {
+        DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        try {
+//            String regPeriod = LocalDate.parse(inspection.getRegPeriod(), inputFormatter).format(outputFormatter);
+            String regPeriodRaw = inspection.getRegPeriod();
+            String regPeriod = null;
+
+            if (regPeriodRaw != null && !regPeriodRaw.trim().isEmpty()) {
+                regPeriod = LocalDate.parse(regPeriodRaw.trim(), inputFormatter)
+                        .format(outputFormatter);
+            }
+            return businessStatusRepository.updateVehInspection(
+                    inspection.getLoanCarId(),
+                    regPeriod,
+                    inspection.getRegLoad(),
+                    inspection.getVehicleInspectionModelCode(),
+                    inspection.getTransPor(),
+                    inspection.getRenovation(),
+                    inspection.getRegSeriNumber()
+            );
+        } catch (Exception e) {
+            throw new BusinessException(ErrorCode.UNKNOWN_ERROR, e.getMessage());
+        }
+    }
+
+    @Override
+    public BusinessStatus updateSimilarAssetsBusiness(LoanRegistrationExtraRequest request) {
+        BusinessStatus businessStatus = null;
+        try {
+            List<SimilarAssetsBusinessRequest> similarAssets = request.getSimilarAssets();
+            if (similarAssets != null && !similarAssets.isEmpty()) {
+                for (SimilarAssetsBusinessRequest similarAssetsBusinessRequest : similarAssets) {
+                    Integer asId = similarAssetsBusinessRequest.getId();
+                    if  (similarAssetsBusinessRequest.isDestroy() && asId != null) {
+                         businessStatusRepository.deleteSimilarAssetBusinessById(similarAssetsBusinessRequest.getId());
+                    }
+                    else if(asId != null){
+                        businessStatus = businessStatusRepository.updateSimilarAssetsBusiness(
+                                similarAssetsBusinessRequest.getId(),
+                                similarAssetsBusinessRequest.getValue(),
+                                similarAssetsBusinessRequest.getLinkWebsite());
+                    }else {
+                        businessStatus = businessStatusRepository.createSimilarAssetsBusiness(
+                                request.getLoanCarId(),
+                                similarAssetsBusinessRequest.getValue(),
+                                similarAssetsBusinessRequest.getLinkWebsite());
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            throw new BusinessException(ErrorCode.UNKNOWN_ERROR, e.getMessage());
+        }
+        return businessStatus;
+    }
+
+    @Override
+    public ResponseEntity<?> deleteShareholderById(int id) {
+        Integer ShId = businessShareRepository.findBusinessShareholderById(id);
+        if (ShId != null) {
+            businessShareRepository.deleteShareholderById(id);
+
+        } else {
+            throw new BusinessException("ID Cổ đông " + id + " không tồn tại");
+        }
+
+        Map<String, String> data = new HashMap<>();
+        data.put("description", "Xóa thành công cổ đông " + ShId);
+        data.put("status", "00");
+
+        return response(toResult(data));
+    }
+
+    @Override
+    public ResponseEntity<?> deleteLoanCarStatusById(int id) {
+        Integer carId = loanCarStatusRepository.findLoanCarStatusById(id);
+        if (carId != null) {
+            loanCarStatusRepository.deleteLoanCarStatusById(id);
+            vehInspectionRepository.deleteVehicleInspectionById(id);
+            businessStatusRepository.deleteCoVehicleBusinessById(id);
+            businessStatusRepository.deleteSimilarAssetBusinessByCarId(id);
+        } else {
+            throw new BusinessException("ID xe " + id + " không tồn tại");
+        }
+
+        Map<String, String> data = new HashMap<>();
+        data.put("description:", "Xóa thành công tài sản " + carId);
+        data.put("status", "00");
+        return response(toResult(data));
+    }
+
+    @Override
+    public BusinessStatus updateGuardians(GuardianRequest guardianRequests) {
+        validateGuardian(guardianRequests);
+        DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        String guardIdDate = LocalDate.parse(guardianRequests.getGuardBirth(), inputFormatter).format(outputFormatter);
+        String guardDob = LocalDate.parse(guardianRequests.getGuardIdDate(), inputFormatter).format(outputFormatter);
+        BusinessStatus businessStatus;
+        try {
+
+
+            List<String> address = wardRepository.getFindBypId(guardianRequests.getGuardWardId(),guardianRequests.getGuardProvinceId());
+            if (address.isEmpty()) {
+                throw new BusinessException(ErrorCodeUtil.PROVINCE_WARD_FAIL);
+            }
+            List<String> residenceAddress = wardRepository.getFindBypId(guardianRequests.getGuardResidenceWardId(),guardianRequests.getGuardResidenceProvinceId());
+            if (residenceAddress.isEmpty()) {
+                throw new BusinessException(ErrorCodeUtil.PROVINCE_WARD_FAIL);
+            }
+            businessStatus = businessStatusRepository.updateGuardian(
+                    guardianRequests.getId(),
+                    guardianRequests.getGuardName(),
+                    guardDob,
+                    guardianRequests.getGuardMobile(),
+                    guardianRequests.getGuardMaritalStatus(),
+                    guardianRequests.getGuardIdNumber(),
+                    guardIdDate,
+                    guardianRequests.getGuardIdAddress(),
+                    guardianRequests.getGuardIdPlace(),
+                    guardianRequests.getGuardAddress(),
+                    guardianRequests.getGuardStatusAddress(),
+                    guardianRequests.getGuardCurrentAddress(),
+                    guardianRequests.getGuardIsFieldWork(),
+                    guardianRequests.getGuardRelationship(),
+                    guardianRequests.getGuardResidenceWardId(),
+                    guardianRequests.getGuardResidenceDistrictId(),
+                    guardianRequests.getGuardResidenceProvinceId(),
+                    guardianRequests.getGuardWardId(),
+                    guardianRequests.getGuardDistrictId(),
+                    guardianRequests.getGuardProvinceId(),
+                    guardianRequests.getGuardGender(),
+                    guardianRequests.getGuardLoanStatusFiny());
+        } catch (Exception e) {
+            throw new BusinessException(ErrorCode.UNKNOWN_ERROR, e.getMessage());
+        }
+        return businessStatus;
+    }
+
+    @Override
+    public List<BusinessGuardianEntity> getBusinessGuardiansByRegId(GetBusinessRequest request) {
+        List<BusinessGuardianEntity> guardiansEntityList = businessGuardianRepository.getBusinessGuardiansByRegId(request.getRegId());
+        if (guardiansEntityList.isEmpty()) {
+            throw new BusinessException(ErrorCode.UNKNOWN_ERROR, "Not found Guardians");
+        }
+        return guardiansEntityList;
+    }
+
+    @Override
+    public ResponseEntity<?> deleteGuardianById(int id) {
+        Integer guarId = businessGuardianRepository.findBusinessGuardianById(id);
+        if (guarId != null) {
+            businessGuardianRepository.deleteByGuardianId(id);
+        } else {
+            throw new BusinessException("ID người Bảo lãnh " + id + " không tồn tại");
+        }
+
+        Map<String, String> data = new HashMap<>();
+        data.put("description", "Xóa thành công người bảo lãnh " + guarId);
+        data.put("status", "00");
+
+        return response(toResult(data));
+    }
+
+    @Override
+    public String updateCoVehicleBusiness(LoanRegistrationExtraRequest requests) {
+        try {
+            BusinessStatus businessStatus = businessStatusRepository.updateCoVehicleBusiness(
+                    requests.getLoanCarId(),
+                    requests.getVehUseFor(),
+                    requests.getBdmm(),
+                    requests.getBt(),
+                    requests.getDbm(),
+                    requests.getDkmn(),
+                    requests.getRrdn(),
+                    requests.getTngt(),
+                    requests.getTk(),
+                    requests.getVehYearManufacture(),
+                    requests.getSanction(),
+                    requests.getCommercial(),
+                    requests.getMarket(),
+                    requests.getVehRenovation()
+            );
+            return businessStatus.getDescription();
+        } catch (Exception e) {
+            throw new BusinessException(ErrorCode.UNKNOWN_ERROR, e.getMessage());
+        }
+    }
+
+    @Override
+    public List<CoVehicle> getCoVehicleBusinessByRegId(GetBusinessRequest request) {
+        List<CoVehicle> coVehicleBusinesses = coVehicleRepository.getCovehicleByRegId(request.getRegId());
+        if (coVehicleBusinesses.isEmpty()) {
+            throw new BusinessException(ErrorCode.UNKNOWN_ERROR, "Not found CovehicleBusiness");
+        }
+        return coVehicleBusinesses;
+    }
+
+    @Override
+    public List<LoanRegistrationExtra> getLoanRegistrationExtraByRegId(GetBusinessRequest request) {
+        List<LoanRegistrationExtra> loanRegistrationExtras = loanRegistrationExtraRepository.findByLoanRegId(request.getRegId());
+        if (loanRegistrationExtras.isEmpty()) {
+            throw new BusinessException(ErrorCode.UNKNOWN_ERROR, "Not found CovehicleBusiness");
+        }
+        return loanRegistrationExtras;
+    }
+
+    @Override
+    public List<VehicleInspection> getVehicleInspectionByRegId(GetBusinessRequest request) {
+        List<VehicleInspection> vehicleInspections = vehInspectionRepository.getVehicleInspectionByRegId(request.getRegId());
+        if (vehicleInspections.isEmpty()) {
+            throw new BusinessException(ErrorCode.UNKNOWN_ERROR, "Not found CovehicleBusiness");
+        }
+        return vehicleInspections;
+    }
+
+    @Override
+    public List<Business> fillAllBusiness() {
+        List<Business> businesses = businessRepository.fillAllBusiness();
+        if (businesses.isEmpty()) {
+            throw new BusinessException(ErrorCode.UNKNOWN_ERROR, "Not found Business");
+        }
+        return businesses;
+    }
+
+    @Override
+    public List<BusinessOwner> fillAllBusinessOwner() {
+        List<BusinessOwner> businessLoanOwners = businessOwnerRepository.getAllBusinessOwner();
+        if (businessLoanOwners.isEmpty()) {
+            throw new BusinessException(ErrorCode.UNKNOWN_ERROR, "Not found Business");
+        }
+        return businessLoanOwners;
+    }
+
+    @Override
+    public List<BusinessOwner> getBusinessOwnerByCustId(GetBusinessRequest getRequest) {
+        List<BusinessOwner> businessLoanOwners = businessOwnerRepository.getBusinessOwnerById(getRequest.getCustId());
+        if (businessLoanOwners.isEmpty()) {
+            throw new BusinessException(ErrorCode.UNKNOWN_ERROR, "Not found BusinessOwner");
+        }
+        return businessLoanOwners;
+    }
+
+    @Override
+    public List<BusinessShareholder> getBusinessShareHolderByRegId(GetBusinessRequest request) {
+        List<BusinessShareholder> businessShareholder = businessShareRepository.getBusinessShareHolderByRegId(request.getRegId());
+        if (businessShareholder == null || businessShareholder.isEmpty()) {
+            throw new BusinessException(ErrorCode.UNKNOWN_ERROR, "Not found BusinessWhere");
+        }
+        return businessShareholder;
+    }
+
+    @Override
+    public BusinessWhere getBusinessWhere(GetBusinessRequest request) {
+        BusinessWhere businessWheres = businessWhereRepository.getBusinessWhere(request.getSaleId(), request.getCustId(), request.getRegId());
+        if (businessWheres == null) {
+            throw new BusinessException(ErrorCode.UNKNOWN_ERROR, "Not found BusinessWhere");
+        }
+        return businessWheres;
+    }
+
+    private void validateNotBlank(String value, String errorCode, String description) {
+        if (value == null || value.trim().isEmpty()) {
+            throw new BusinessException(errorCode, description);
+        }
+    }
+
+    private void validateNotBlankDouble(Double value, String errorCode, String description) {
+        if (value == null) {
+            throw new BusinessException(errorCode, description);
+        }
+    }
+
+    private void validateNotBlankInteger(Integer value, String errorCode, String description) {
+        if (value == null) {
+            throw new BusinessException(errorCode, description);
+        }
+    }
+
+    private void validateNotBlankInt(int value, String errorCode, String description) {
+        if (value == 0) {
+            throw new BusinessException(errorCode, description);
+        }
+    }
+
+    private static void validateMax3Digits(Double value, String errorCode, String description) {
+        if (value != null) {
+            int intValue = value.intValue();
+            if (intValue > 999) {
+                throw new BusinessException(errorCode, description);
+            }
+        }
+    }
+
+    private static void validateYear(Integer value, String errorCode, String description, String errorCodeMin,
+                                     String descriptionMin) {
+        if (value != null) {
+            int intValue = value.intValue();
+            if (intValue > 9999) {
+                throw new BusinessException(errorCode, description);
+            }
+            if (intValue < 0) {
+                throw new BusinessException(errorCodeMin, descriptionMin);
+            }
+        }
+    }
+
+    private static void validateRange0To100(Double value, String errorCode, String description) {
+        if (value != null) {
+            if (value < 0 || value > 100) {
+                throw new BusinessException(errorCode, description);
+            }
+        }
+    }
+
+    private void validateBigDecimalNotBlank(BigDecimal value,
+                                            String errorCode,
+                                            String description,
+                                            String errorCode2,String description2
+    ) {
+        //  Check null
+        if (value == null) {
+            throw new BusinessException(errorCode, description);
+        }
+        if (value.compareTo(BigDecimal.ZERO) < 0) {
+            throw new BusinessException(ErrorCode.LOAN_AMOUNT_NEGATIVE, ErrorCode.LOAN_AMOUNT_NEGATIVE_DESCRIPTION);
+        }
+    }
+    private void validateBigDecimal(BigDecimal value) {
+        //  Check null
+        if (value == null) {
+            throw new BusinessException(ErrorCode.LOAN_AMOUNT_BLANK, ErrorCode.LOAN_AMOUNT_BLANK_DESCRIPTION);
+        }
+
+        //  Check âm
+        if (value.compareTo(BigDecimal.ZERO) < 0) {
+            throw new BusinessException(ErrorCode.LOAN_AMOUNT_NEGATIVE, ErrorCode.LOAN_AMOUNT_NEGATIVE_DESCRIPTION);
+        }
+
+        // Check > 3 tỷ
+        BigDecimal max = BigDecimal.valueOf(3_000_000_000L);
+        if (value.compareTo(max) > 0) {
+            throw new BusinessException(ErrorCode.LOAN_AMOUNT_TOO_LARGE, ErrorCode.LOAN_AMOUNT_TOO_LARGE_DESCRIPTION);
+        }
+        if (value.compareTo(BigDecimal.ZERO) == 0) {
+            throw new BusinessException(ErrorCode.LOAN_AMOUNT_FULL_ZERO, ErrorCode.LOAN_AMOUNT_FULL_ZERO_DESCRIPTION);
+        }
+    }
+
+
+    private void validateTwentyCharacter(String value, String errorCode, String description) {
+        if (value.trim().length() > 20) {
+            throw new BusinessException(errorCode, description);
+        }
+    }
+
+    private void validateFiftyCharacter(String value, String errorCode, String description) {
+        if (value.trim().length() > 50) {
+            throw new BusinessException(errorCode, description);
+        }
+    }
+
+    private void validateOneHundredCharacter(String value, String errorCode, String description) {
+        if (value.trim().length() > 100) {
+            throw new BusinessException(errorCode, description);
+        }
+    }
+
+//    private void validateTenBillion(BigDecimal value, String errorCode, String description) {
+//        if (value != null) {
+//            BigDecimal tenBillion = new BigDecimal("10000000000");
+//
+//            if (value.compareTo(tenBillion) > 0) {
+//                throw new BusinessException(errorCode, description);
+//            }
+//        }
+//    }
+
+    // không cho nhập khoảng trắng
+    private void validateSpace(String value, String errorCode, String description) {
+        if (!value.equals(value.trim())) {
+            throw new BusinessException(errorCode, description);
+        }
+    }
+
+    private void validateBusinessRequest(BusinessRequest request) {
+        validateNotBlank(request.getFullName(), ErrorCode.FULL_NAME_BUSINESS_BLANK, ErrorCode.FULL_NAME_BUSINESS_BLANK_DESCRIPTION);
+        validateNotBlank(request.getIdNumber(), ErrorCode.ID_NUMBER_BLANK, ErrorCode.ID_NUMBER_BLANK_DESCRIPTION);
+        validateNotBlank(request.getIdDate(), ErrorCode.ID_DATE_BLANK, ErrorCode.ID_DATE_BLANK_DESCRIPTION);
+        validateNotBlank(request.getIdPlace(), ErrorCode.ID_PLACE_BLANK, ErrorCode.ID_PLACE_BLANK_DESCRIPTION);
+        validateNotBlank(request.getMobile(), ErrorCode.MOBILE_BUSINESS_BLANK, ErrorCode.MOBILE_BUSINESS_BLANK_DESCRIPTION);
+        validateNotBlank(request.getBankAccountName(), ErrorCode.BANK_ACCOUNT_NAME_BLANK, ErrorCode.BANK_ACCOUNT_NAME_BLANK_DESCRIPTION);
+        validateNotBlank(request.getBankAccountNumber(), ErrorCode.BANK_ACCOUNT_NUMBER_BLANK, ErrorCode.BANK_ACCOUNT_NUMBER_BLANK_DESCRIPTION);
+        validateNotBlank(request.getBankName(), ErrorCode.BANK_NAME_BLANK, ErrorCode.BANK_NAME_BLANK_DESCRIPTION);
+        validateNotBlank(request.getAddress(), ErrorCode.ADDRESS_BLANK, ErrorCode.ADDRESS_BLANK_DESCRIPTION);
+        validateNotBlank(request.getResidenceAddress(), ErrorCode.RESIDENCE_ADDRESS_BLANK, ErrorCode.RESIDENCE_ADDRESS_BLANK_DESCRIPTION);
+        validateNotBlank(request.getProfessionBusiness(), ErrorCode.PROFESSION_BLANK, ErrorCode.PROFESSION_BLANK_DESCRIPTION);
+        validateNotBlank(request.getBusinessProduct(), ErrorCode.BUSINESS_PRODUCT_BLANK, ErrorCode.BUSINESS_PRODUCT_BLANK_DESCRIPTION);
+        validateNotBlank(request.getDescribeCustomer(), ErrorCode.DESCRIBE_CUSTOMER_BLANK, ErrorCode.DESCRIBE_CUSTOMER_BLANK_DESCRIPTION);
+        validateNotBlank(request.getSellAddress(), ErrorCode.SELL_ADDRESS_BLANK, ErrorCode.SELL_ADDRESS_BLANK_DESCRIPTION);
+        validateNotBlank(request.getPurposeUsingLoan(), ErrorCode.PURPOSE_USING_LOAN_BLANK, ErrorCode.PURPOSE_USING_LOAN_BLANK_DESCRIPTION);
+        validateNotBlank(request.getBnMobile(), ErrorCode.BUSINESS_OWNER_MOBILE_BLANK, ErrorCode.BUSINESS_OWNER_MOBILE_BLANK_DESCRIPTION);
+        validateNotBlank(request.getBnDob(), ErrorCode.BUSINESS_OWNER_DOB_BLANK, ErrorCode.BUSINESS_OWNER_DOB_BLANK_DESCRIPTION);
+        validateNotBlank(request.getBnIdNumber(), ErrorCode.BUSINESS_OWNER_ID_NUMBER_BLANK, ErrorCode.BUSINESS_OWNER_ID_NUMBER_BLANK_DESCRIPTION);
+        validateNotBlank(request.getBnIdDate(), ErrorCode.BUSINESS_OWNER_ID_DATE_BLANK, ErrorCode.BUSINESS_OWNER_ID_DATE_BLANK_DESCRIPTION);
+        validateNotBlank(request.getBnIdPlace(), ErrorCode.BUSINESS_OWNER_ID_PLACE_BLANK, ErrorCode.BUSINESS_OWNER_ID_PLACE_BLANK_DESCRIPTION);
+        validateOneHundredCharacter(request.getBnIdPlace(),ErrorCode.BUSINESS_OWNER_UPDATE_ID_PLACE_OVER_100, ErrorCode.BUSINESS_OWNER_UPDATE_ID_PLACE_OVER_100_DESCRIPTION);
+        validateNotBlank(request.getBnResidenceAddress(), ErrorCode.BUSINESS_OWNER_RESIDENCE_ADDRESS_BLANK, ErrorCode.BUSINESS_OWNER_RESIDENCE_ADDRESS_BLANK_DESCRIPTION);
+        validateNotBlank(request.getBnCurrentAddress(), ErrorCode.BUSINESS_OWNER_CURRENT_ADDRESS_BLANK, ErrorCode.BUSINESS_OWNER_CURRENT_ADDRESS_BLANK_DESCRIPTION);
+        validateNotBlank(request.getLoanType(), ErrorCode.LOAN_TYPE_BLANK, ErrorCode.LOAN_TYPE_BLANK_DESCRIPTION);
+        validateNotBlank(request.getPayType(), ErrorCode.PAY_TYPE_BLANK, ErrorCode.PAY_TYPE_BLANK_DESCRIPTION);
+        validateNotBlank(request.getTermType(), ErrorCode.TERM_TYPE_BLANK, ErrorCode.TERM_TYPE_BLANK_DESCRIPTION);
+        validateNotBlank(request.getBnFullName(), ErrorCode.BUSINESS_FULL_NAME_BLANK, ErrorCode.BUSINESS_FULL_NAME_BLANK_DESCRIPTION);
+        validateNotBlank(request.getActiveStatus(), ErrorCode.BUSINESS_ACTIVE_STATUS_BLANK, ErrorCode.BUSINESS_ACTIVE_STATUS_BLANK_DESCRIPTION);
+
+        DateValidator.validateDateFormat(request.getIdDate(), ErrorCode.ID_DATE_FORMAT, ErrorCode.ID_DATE_FORMAT_DESCRIPTION);
+        DateValidator.validateDateFormat(request.getBnDob(), ErrorCode.BUSINESS_OWNER_DOB_FORMAT, ErrorCode.BUSINESS_OWNER_DOB_FORMAT_DESCRIPTION);
+        DateValidator.validateDateFormat(request.getBnIdDate(), ErrorCode.BUSINESS_OWNER_ID_DATE_FORMAT, ErrorCode.BUSINESS_OWNER_ID_DATE_FORMAT_DESCRIPTION);
+
+        DateValidator.validateRealDate(request.getIdDate(), ErrorCode.ID_DATE_REAL, ErrorCode.ID_DATE_REAL_DESCRIPTION);
+        DateValidator.validateRealDate(request.getBnDob(), ErrorCode.BUSINESS_OWNER_DOB_REAL, ErrorCode.BUSINESS_OWNER_DOB_REAL_DESCRIPTION);
+        DateValidator.validateRealDate(request.getBnIdDate(), ErrorCode.BUSINESS_OWNER_ID_DATE_REAL, ErrorCode.BUSINESS_OWNER_ID_DATE_REAL_DESCRIPTION);
+
+        DateValidator.validateRealDateNow(request.getBnIdDate(), ErrorCode.BUSINESS_OWNER_ID_DATE_REAL_NOW, ErrorCode.BUSINESS_OWNER_ID_DATE_REAL_DESCRIPTION_NOW);
+
+        validateNotBlankInteger(request.getWardId(), ErrorCode.BUSINESS_CURRENT_WARD_ID_BLANK, ErrorCode.BUSINESS_CURRENT_WARD_ID_BLANK_DESCRIPTION);
+//        validateNotBlankInteger(request.getDistrictId(), ErrorCode.BUSINESS_CURRENT_DISTRICT_ID_BLANK, ErrorCode.BUSINESS_CURRENT_DISTRICT_ID_BLANK_DESCRIPTION);
+        validateNotBlankInteger(request.getProvinceId(), ErrorCode.BUSINESS_CURRENT_PROVINCE_ID_BLANK, ErrorCode.BUSINESS_CURRENT_PROVINCE_ID_BLANK_DESCRIPTION);
+        validateNotBlankInteger(request.getBnWardId(), ErrorCode.BUSINESS_OWNER_WARD_ID_BLANK, ErrorCode.BUSINESS_OWNER_WARD_ID_BLANK_DESCRIPTION);
+//        validateNotBlankInteger(request.getBnDistrictId(), ErrorCode.BUSINESS_OWNER_DISTRICT_ID_BLANK, ErrorCode.BUSINESS_OWNER_DISTRICT_ID_BLANK_DESCRIPTION);
+        validateNotBlankInteger(request.getBnProvinceId(), ErrorCode.BUSINESS_OWNER_PROVINCE_ID_BLANK, ErrorCode.BUSINESS_OWNER_PROVINCE_ID_BLANK_DESCRIPTION);
+        validateNotBlankInteger(request.getBnLoanStatusFiny(), ErrorCode.BUSINESS_OWNER_LOAN_STATUS_FINY_BLANK, ErrorCode.BUSINESS_OWNER_LOAN_STATUS_FINY_BLANK_DESCRIPTION);
+        validateNotBlankInteger(request.getBnMaritalStatus(), ErrorCode.BUSINESS_OWNER_MARITAL_STATUS_BLANK, ErrorCode.BUSINESS_OWNER_MARITAL_STATUS_BLANK_DESCRIPTION);
+        validateNotBlankInteger(request.getBusinessOption(), ErrorCode.BUSINESS_OPTION_BLANK, ErrorCode.BUSINESS_OPTION_BLANK_DESCRIPTION);
+        validateNotBlankInteger(request.getStatusBusiness(), ErrorCode.STATUS_BUSINESS_BLANK, ErrorCode.STATUS_BUSINESS_BLANK_DESCRIPTION);
+        validateNotBlankInteger(request.getStatusFiny(), ErrorCode.STATUS_FINY_BLANK, ErrorCode.STATUS_FINY_BLANK_DESCRIPTION);
+        validateNotBlankInteger(request.getBnGender(), ErrorCode.BUSINESS_OWNER_GENDER_BLACK, ErrorCode.BUSINESS_OWNER_GENDER_BLACK_DESCRIPTION);
+        validateNotBlankInteger(request.getTerm(), ErrorCode.TERM_BLANK, ErrorCode.TERM_BLANK_DESCRIPTION);
+        validateNotBlankInteger(request.getSaleId(), ErrorCode.SALE_ID_BLANK, ErrorCode.SALE_ID_BLANK_DESCRIPTION);
+        validateNotBlankInteger(request.getResidenceWardId(), ErrorCode.WARD_ID_BLANK, ErrorCode.WARD_ID_BLANK_DESCRIPTION);
+//        validateNotBlankInteger(request.getResidenceDistrictId(), ErrorCode.DISTRICT_ID_BLANK, ErrorCode.DISTRICT_ID_BLANK_DESCRIPTION);
+        validateNotBlankInteger(request.getResidenceProvinceId(), ErrorCode.PROVINCE_ID_BLANK, ErrorCode.PROVINCE_ID_BLANK_DESCRIPTION);
+        validateNotBlankInteger(request.getBnResidenceWardId(), ErrorCode.BUSINESS_OWNER_RESIDENCE_WARD_ID_BLANK, ErrorCode.BUSINESS_OWNER_RESIDENCE_WARD_ID_BLANK_DESCRIPTION);
+//        validateNotBlankInteger(request.getBnResidenceDistrictId(), ErrorCode.BUSINESS_OWNER_RESIDENCE_DISTRICT_ID_BLANK, ErrorCode.BUSINESS_OWNER_RESIDENCE_DISTRICT_ID_BLANK_DESCRIPTION);
+        validateNotBlankInteger(request.getBnResidenceProvinceId(), ErrorCode.BUSINESS_OWNER_RESIDENCE_PROVINCE_ID_BLANK, ErrorCode.BUSINESS_OWNER_RESIDENCE_PROVINCE_ID_BLANK_DESCRIPTION);
+
+        validateSpace(request.getFullName(), ErrorCode.FULL_NAME_SPACE, ErrorCode.FULL_NAME_SPACE_DESCRIPTION);
+        validateSpace(request.getBnFullName(), ErrorCode.BUSINESS_OWNER_FULL_NAME_SPACE, ErrorCode.BUSINESS_OWNER_FULL_NAME_SPACE_DESCRIPTION);
+        validateSpace(request.getBnMobile(), ErrorCode.BUSINESS_OWNER_MOBILE_SPACE, ErrorCode.BUSINESS_OWNER_MOBILE_SPACE_DESCRIPTION);
+        validateSpace(request.getBnIdNumber(), ErrorCode.BUSINESS_OWNER_ID_NUMBER_SPACE, ErrorCode.BUSINESS_OWNER_ID_NUMBER_SPACE_DESCRIPTION);
+        validateSpace(request.getIdNumber(), ErrorCode.ID_NUMBER_SPACE, ErrorCode.ID_NUMBER_SPACE_DESCRIPTION);
+        validateSpace(request.getIdPlace(), ErrorCode.BUSINESS_OWNER_ID_PLACE_SPACE, ErrorCode.BUSINESS_OWNER_ID_PLACE_SPACE_DESCRIPTION);
+        validateSpace(request.getMobile(), ErrorCode.BUSINESS_OWNER_MOBILE_PLACE_SPACE, ErrorCode.BUSINESS_OWNER_MOBILE_PLACE_SPACE_DESCRIPTION);
+        validateSpace(request.getBankAccountName(), ErrorCode.BUSINESS_OWNER_BANK_ACCOUNT_NAME_SPACE, ErrorCode.BUSINESS_OWNER_BANK_ACCOUNT_NAME_SPACE_DESCRIPTION);
+        validateSpace(request.getBankAccountNumber(), ErrorCode.BUSINESS_OWNER_BANK_ACCOUNT_NUMBER_SPACE, ErrorCode.BUSINESS_OWNER_BANK_ACCOUNT_NUMBER_SPACE_DESCRIPTION);
+
+
+        if (request.getLoanAmount() == null) {
+            throw new BusinessException(ErrorCode.LOAN_AMOUNT_BLANK, ErrorCode.LOAN_AMOUNT_BLANK_DESCRIPTION);
+        }
+        if (request.getProfit() == null) {
+            throw new BusinessException(ErrorCode.PROFIT_VALID, ErrorCode.PROFIT_VALID_DESCRIPTION_1);
+        }
+
+        if (request.getProfit().compareTo(BigDecimal.ZERO) < 0 || request.getProfit().compareTo(new BigDecimal("1000000000000")) > 0) {
+            throw new BusinessException(ErrorCode.PROFIT_VALID, ErrorCode.PROFIT_VALID_DESCRIPTION_3);
+        }
+
+        if (request.getProfit().compareTo(new BigDecimal("1000000000000")) > 0 || request.getProfit().scale() > 0) {
+            throw new BusinessException(ErrorCode.PROFIT_VALID, ErrorCode.PROFIT_VALID_DESCRIPTION_2);
+        }
+
+        if (request.getRatio() == null || request.getRatio() < 0 || request.getRatio() > 100) {
+            throw new BusinessException(ErrorCode.RATIO_BLANK, ErrorCode.RATIO_BLANK_DESCRIPTION);
+        }
+
+        if (request.getIncome() == null) {
+            throw new BusinessException(ErrorCode.INCOME_BLANK, ErrorCode.INCOME_BLANK_BLANK_DESCRIPTION_1);
+        }
+
+        if (request.getIncome().compareTo(BigDecimal.ZERO) < 0 || request.getIncome().compareTo(new BigDecimal("1000000000000")) > 0 ) {
+            throw new BusinessException(ErrorCode.INCOME_BLANK, ErrorCode.INCOME_BLANK_BLANK_DESCRIPTION_3);
+        }
+
+        if (request.getIncome().compareTo(new BigDecimal("1000000000000")) > 0 || request.getIncome().scale() > 0) {
+            throw new BusinessException(ErrorCode.INCOME_BLANK, ErrorCode.INCOME_BLANK_BLANK_DESCRIPTION_2);
+        }
+
+        if (request.getNumberWorking() == null || request.getNumberWorking() < 1 || request.getNumberWorking() > 100000) {
+            throw new BusinessException(ErrorCode.NUMBER_WORKING_BLANK, ErrorCode.NUMBER_WORKING_BLANK_DESCRIPTION);
+        }
+
+        if (request.getBusinessYear() == null || request.getBusinessYear() <= 0 || request.getBusinessYear() > 9999) {
+            throw new BusinessException(ErrorCode.BUSINESS_YEAR_BLANK, ErrorCode.BUSINESS_YEAR_BLANK_DESCRIPTION);
+        }
+
+        if (request.getBnFullName().trim().length() > 100 || !request.getBnFullName().matches("^[\\p{L} ]+$")) {
+            throw new BusinessException(ErrorCode.BUSINESS_FULL_NAME_VALID, ErrorCode.BUSINESS_FULL_NAME_VALID_DESCRIPTION);
+        }
+
+        if (request.getLoanAmount().compareTo(BigDecimal.ZERO) <= 0 || request.getLoanAmount().compareTo(new BigDecimal("3000000000")) > 0
+                || request.getLoanAmount().stripTrailingZeros().scale() > 0) {
+            throw new BusinessException(ErrorCode.LOAN_AMOUNT_VALID, ErrorCode.LOAN_AMOUNT_VALID_DESCRIPTION);
+        }
+
+        validateOneHundredCharacter(request.getFullName(), ErrorCode.FULL_NAME_TOO_LONG, ErrorCode.FULL_NAME_TOO_LONG_DESCRIPTION);
+        validateOneHundredCharacter(request.getBnIdDate(), ErrorCode.BUSINESS_ID_PLACE_TOO_LONG, ErrorCode.BUSINESS_ID_PLACE_TOO_LONG_DESCRIPTION);
+        validateOneHundredCharacter(request.getBnResidenceAddress(), ErrorCode.BUSINESS_RESIDENCE_ADDRESS_TOO_LONG, ErrorCode.BUSINESS_RESIDENCE_ADDRESS_TOO_LONG_DESCRIPTION);
+        validateOneHundredCharacter(request.getBnCurrentAddress(), ErrorCode.BUSINESS_CURRENT_ADDRESS_TOO_LONG, ErrorCode.BUSINESS_CURRENT_ADDRESS_TOO_LONG_DESCRIPTION);
+        validateOneHundredCharacter(request.getSellAddress(), ErrorCode.SELL_ADDRESS_TOO_LONG, ErrorCode.SELL_ADDRESS_TOO_LONG_DESCRIPTION);
+        validateOneHundredCharacter(request.getDescribeCustomer(), ErrorCode.DESCRIBE_CUSTOMER_TOO_LONG, ErrorCode.DESCRIBE_CUSTOMER_TOO_LONG_DESCRIPTION);
+        validateOneHundredCharacter(request.getResidenceAddress(), ErrorCode.RESIDENCE_ADDRESS_TOO_LONG, ErrorCode.RESIDENCE_ADDRESS_TOO_LONG_DESCRIPTION);
+        validateOneHundredCharacter(request.getEmail(), ErrorCode.EMAIL_TOO_LONG, ErrorCode.EMAIL_TOO_LONG_DESCRIPTION);
+        validateOneHundredCharacter(request.getBusinessProduct(), ErrorCode.BUSINESS_PRODUCT_LONG, ErrorCode.BUSINESS_PRODUCT_LONG_DESCRIPTION);
+        validateOneHundredCharacter(request.getProfessionBusiness(), ErrorCode.PROFESSION_TOO_LONG, ErrorCode.PROFESSION_TOO_LONG_DESCRIPTION);
+        validateOneHundredCharacter(request.getProductionAddress(), ErrorCode.PRODUCTION_ADDRESS_TOO_LONG, ErrorCode.PRODUCTION_ADDRESS_TOO_LONG_DESCRIPTION);
+        validateOneHundredCharacter(request.getActiveStatus(), ErrorCode.ACTIVE_STATUS_TOO_LONG, ErrorCode.ACTIVE_STATUS_TOO_LONG_DESCRIPTION);
+        validateTwentyCharacter(request.getBankAccountNumber(),  ErrorCode.BUSINESS_OWNER_BANK_ACCOUNT_MAX, ErrorCode.BUSINESS_OWNER_BANK_ACCOUNT_MAX_DESCRIPTION);
+        validateFiftyCharacter(request.getIdNumber(),ErrorCode.ID_NUMBER_NUMBER,ErrorCode.ID_NUMBER_NUMBER_DESCRIPTION);
+
+        if (request.getAddress().trim().length() > 300) {
+            throw new BusinessException(ErrorCode.ADDRESS_TOO_LONG, ErrorCode.ADDRESS_TOO_LONG_DESCRIPTION);
+        }
+
+//        if (!request.getIdNumber().matches("^\\d{10}$|^\\d{13}$")) {
+//            throw new BusinessException(ErrorCode.ID_NUMBER_VALID, ErrorCode.ID_NUMBER_VALID_DESCRIPTION);
+//        }
+
+        if (!request.getBnIdNumber().matches("^\\d{12}$")) {
+            throw new BusinessException(ErrorCode.BUSINESS_ID_NUMBER_VALID, ErrorCode.BUSINESS_ID_NUMBER_VALID_DESCRIPTION);
+        }
+
+        if (request.getIdPlace().trim().length() > 200) {
+            throw new BusinessException(ErrorCode.ID_PLACE_TOO_LONG, ErrorCode.ID_PLACE_TOO_LONG_DESCRIPTION);
+        }
+
+        if (!request.getMobile().matches("^\\d{10}$")) {
+            throw new BusinessException(ErrorCode.MOBILE_BUSINESS_INVALID, ErrorCode.MOBILE_BUSINESS_INVALID_DESCRIPTION);
+        }
+
+        if (!request.getBnMobile().matches("^\\d{10}$")) {
+            throw new BusinessException(ErrorCode.BUSINESS_OWNER_MOBILE_INVALID, ErrorCode.BUSINESS_OWNER_MOBILE_INVALID_DESCRIPTION);
+        }
+
+        validateOneHundredCharacter(request.getWebsite(), ErrorCode.WEBSITE_TOO_LONG, ErrorCode.WEBSITE_TOO_LONG_DESCRIPTION);
+
+        if (request.getBankAccountName().trim().length() > 100) {
+            throw new BusinessException(ErrorCode.BANK_ACCOUNT_NAME_TOO_LONG, ErrorCode.BANK_ACCOUNT_NAME_TOO_LONG_DESCRIPTION);
+        }
+
+        if (request.getBankAccountNumber() == null ||
+                request.getBankAccountNumber().trim().isEmpty() ||
+                request.getBankAccountNumber().trim().length() > 100 ||
+                !request.getBankAccountNumber().matches("^[a-zA-Z0-9]+$")) {
+            throw new BusinessException(ErrorCode.BANK_ACCOUNT_NUMBER_TOO_LONG, ErrorCode.BANK_ACCOUNT_NUMBER_TOO_LONG_DESCRIPTION);
+        }
+
+        if (!request.getBankAccountName().matches("^[\\p{L} ]+$")) {
+            throw new BusinessException(ErrorCode.BANK_ACCOUNT_NAME_VALID, ErrorCode.BANK_ACCOUNT_NAME_VALID_DESCRIPTION);
+
+        }
+    }
+
+    private void validateBusinessUpdateRequest(BusinessUpdateRequest request) {
+        validateNotBlank(request.getFullName(), ErrorCode.FULL_NAME_BUSINESS_BLANK, ErrorCode.FULL_NAME_BUSINESS_BLANK_DESCRIPTION);
+        validateNotBlank(request.getIdNumber(), ErrorCode.ID_NUMBER_BLANK, ErrorCode.ID_NUMBER_BLANK_DESCRIPTION);
+        validateNotBlank(request.getIdDate(), ErrorCode.ID_DATE_BLANK, ErrorCode.ID_DATE_BLANK_DESCRIPTION);
+        validateNotBlank(request.getIdPlace(), ErrorCode.ID_PLACE_BLANK, ErrorCode.ID_PLACE_BLANK_DESCRIPTION);
+        validateNotBlank(request.getMobile(), ErrorCode.MOBILE_BUSINESS_BLANK, ErrorCode.MOBILE_BUSINESS_BLANK_DESCRIPTION);
+        validateNotBlank(request.getBankAccountName(), ErrorCode.BANK_ACCOUNT_NAME_BLANK, ErrorCode.BANK_ACCOUNT_NAME_BLANK_DESCRIPTION);
+        validateNotBlank(request.getBankName(), ErrorCode.BANK_NAME_BLANK, ErrorCode.BANK_NAME_BLANK_DESCRIPTION);
+        validateNotBlank(request.getLoanType(), ErrorCode.LOAN_TYPE_NOT_BLANK, ErrorCode.LOAN_TYPE_NOT_BLANK_DESCRIPTION);
+        validateNotBlankInteger(request.getTerm(), ErrorCode.TERM_BLANK, ErrorCode.TERM_BLANK_DESCRIPTION);
+        validateNotBlank(request.getTermType(), ErrorCode.TERM_TYPE_BLANK, ErrorCode.TERM_TYPE_BLANK_DESCRIPTION);
+        validateNotBlankInteger(request.getBnGender(), ErrorCode.BUSINESS_OWNER_UPDATE_GENDER_BLANK, ErrorCode.BUSINESS_OWNER_UPDATE_GENDER_BLANK_DESCRIPTION);
+        validateNotBlankInteger(request.getBnLoanStatusFiny(), ErrorCode.BUSINESS_OWNER_UPDATE_LOAN_STATUS_BLANK, ErrorCode.BUSINESS_OWNER_UPDATE_LOAN_STATUS_BLANK_DESCRIPTION);
+        validateNotBlankInteger(request.getBnMaritalStatus(), ErrorCode.BUSINESS_OWNER_UPDATE_MARRY_STATUS_BLANK, ErrorCode.BUSINESS_OWNER_UPDATE_MARRY_STATUS_BLANK_DESCRIPTION);
+        validateNotBlankInteger(request.getBnProvinceId(), ErrorCode.BUSINESS_OWNER_UPDATE_PROVINCE_BLANK, ErrorCode.BUSINESS_OWNER_UPDATE_PROVINCE_BLANK_DESCRIPTION);
+//        validateNotBlankInteger(request.getBnDistrictId(), ErrorCode.BUSINESS_OWNER_UPDATE_DISTRICT_BLANK, ErrorCode.BUSINESS_OWNER_UPDATE_DISTRICT_BLANK_DESCRIPTION);
+        validateNotBlankInteger(request.getBnWardId(), ErrorCode.BUSINESS_OWNER_UPDATE_WARD_BLANK, ErrorCode.BUSINESS_OWNER_UPDATE_WARD_BLANK_DESCRIPTION);
+
+        ValidUtils.validateNotBlank(request.getBnFullName(), ErrorCode.BUSINESS_OWNER_UPDATE_FULL_NAME_BLANK, ErrorCode.BUSINESS_OWNER_UPDATE_FULL_NAME_BLANK_DESCRIPTION);
+        ValidUtils.validateMaxLength(request.getBnFullName(), 100, ErrorCode.BUSINESS_OWNER_UPDATE_FULL_NAME_OVER100, ErrorCode.BUSINESS_OWNER_UPDATE_FULL_NAME_OVER100_DESCRIPTION);
+        ValidUtils.validateNoLeadingTrailingSpace(request.getBnFullName(), ErrorCode.BUSINESS_OWNER_UPDATE_FULL_NAME_SPACE, ErrorCode.BUSINESS_OWNER_UPDATE_FULL_NAME_SPACE_DESCRIPTION);
+        ValidUtils.validateRegex(request.getBnFullName(), ErrorCode.VIETNAMESE_NAME_PATTERN, ErrorCode.BUSINESS_OWNER_UPDATE_FULL_NAME_SPECIAL, ErrorCode.BUSINESS_OWNER_UPDATE_FULL_NAME_SPECIAL_DESCRIPTION);
+
+        ValidUtils.validateNotBlank(request.getBnMobile(), ErrorCode.BUSINESS_OWNER_UPDATE_PHONE_BLANK, ErrorCode.BUSINESS_OWNER_UPDATE_PHONE_DESCRIPTION);
+        ValidUtils.validateNoLeadingTrailingSpace(request.getBnMobile(), ErrorCode.BUSINESS_OWNER_UPDATE_PHONE_NO_SPACE, ErrorCode.BUSINESS_OWNER_UPDATE_PHONE_NO_SPACE_DESCRIPTION);
+        ValidUtils.validateRegex(request.getMobile(), ErrorCode.VIETNAM_PHONE_REGEX, ErrorCode.MOBILE_BUSINESS_INVALID,ErrorCode.MOBILE_BUSINESS_INVALID_DESCRIPTION);
+
+        ValidUtils.validateNotBlank(request.getMobile(), ErrorCode.BUSINESS_OWNER_UPDATE_PHONE_DN_BLANK, ErrorCode.BUSINESS_OWNER_UPDATE_PHONE_DN_BLANK_DESCRIPTION);
+        ValidUtils.validateNoLeadingTrailingSpace(request.getMobile(), ErrorCode.BUSINESS_OWNER_UPDATE_PHONE_DN_NO_SPACE, ErrorCode.BUSINESS_OWNER_UPDATE_PHONE_DN_NO_SPACE_DESCRIPTION);
+        ValidUtils.validateRegex(request.getBnMobile(), ErrorCode.VIETNAM_PHONE_REGEX, ErrorCode.BUSINESS_OWNER_UPDATE_PHONE_INVALID,ErrorCode.BUSINESS_OWNER_UPDATE_PHONE_INVALID_DESCRIPTION);
+        ValidUtils.validateNotBlank(request.getBankAccountNumber(), ErrorCode.BUSINESS_OWNER_UPDATE_BANK_ACCOUNT_BLANK, ErrorCode.BUSINESS_OWNER_UPDATE_BANK_ACCOUNT_BLANK_DESCRIPTION);
+        ValidUtils.validateMaxLength(request.getBankAccountNumber(), 20, ErrorCode.BUSINESS_OWNER_UPDATE_BANK_ACCOUNT_MAX, ErrorCode.BUSINESS_OWNER_UPDATE_BANK_ACCOUNT_MAX_DESCRIPTION);
+        ValidUtils.validateNoLeadingTrailingSpace(request.getBankAccountNumber(), ErrorCode.BUSINESS_OWNER_UPDATE_BANK_ACCOUNT_SPACE, ErrorCode.BUSINESS_OWNER_UPDATE_BANK_ACCOUNT_SPACE_DESCRIPTION);
+        ValidUtils.validateRegex(request.getBankAccountNumber(), ErrorCode.ALPHANUMERIC_PATTERN, ErrorCode.BUSINESS_OWNER_UPDATE_BANK_ACCOUNT_SPECIAL, ErrorCode.BUSINESS_OWNER_UPDATE_BANK_ACCOUNT_SPECIAL_DESCRIPTION);
+
+        ValidUtils.validateMaxLength(request.getBankAccountName(), 100, ErrorCode.BUSINESS_OWNER_UPDATE_BANK_ACCOUNT_NAME_MAX, ErrorCode.BUSINESS_OWNER_UPDATE_BANK_ACCOUNT_NAME_MAX_DESCRIPTION);
+
+        validateBigDecimal(request.getLoanAmount());
+
+        ValidUtils.validateNotBlank(request.getBnIdNumber(), ErrorCode.BUSINESS_OWNER_UPDATE_CCCD_NO_BLANK, ErrorCode.BUSINESS_OWNER_UPDATE_CCCD_NO_BLANK_DESCRIPTION);
+        ValidUtils.validateNoLeadingTrailingSpace(request.getBnIdNumber(), ErrorCode.BUSINESS_OWNER_UPDATE_CCCD_NO_SPACE, ErrorCode.BUSINESS_OWNER_UPDATE_CCCD_NO_SPACE_DESCRIPTION);
+        ValidUtils.validateRegex(request.getBnIdNumber(), ErrorCode.DIGIT_ONLY_PATTERN, ErrorCode.BUSINESS_OWNER_UPDATE_CCCD_DIGIT_ONLY, ErrorCode.BUSINESS_OWNER_UPDATE_CCCD_DIGIT_ONLY_DESCRIPTION);
+        ValidUtils.validateExactLength(request.getBnIdNumber(), 12,ErrorCode.BUSINESS_OWNER_UPDATE_CCCD_SIZE, ErrorCode.BUSINESS_OWNER_UPDATE_CCCD_SIZE_DESCRIPTION);
+        ValidUtils.validateMaxLength(request.getBnIdPlace(), 100, ErrorCode.BUSINESS_OWNER_UPDATE_ID_PLACE_OVER_100, ErrorCode.BUSINESS_OWNER_UPDATE_ID_PLACE_OVER_100_DESCRIPTION);
+        ValidUtils.validateNoLeadingTrailingSpace(request.getBnIdPlace(), ErrorCode.BUSINESS_OWNER_UPDATE_ID_PLACE_SPACE, ErrorCode.BUSINESS_OWNER_UPDATE_ID_PLACE_SPACE_DESCRIPTION);
+
+        ValidUtils.validateMaxLength(request.getBnResidenceAddress(), 100, ErrorCode.BUSINESS_OWNER_UPDATE_RESIDENCE_ADDRESS_OVER_100, ErrorCode.BUSINESS_OWNER_UPDATE_RESIDENCE_ADDRESS_OVER_100_DESCRIPTION);
+        ValidUtils.validateNoLeadingTrailingSpace(request.getBnResidenceAddress(), ErrorCode.BUSINESS_OWNER_UPDATE_RESIDENCE_ADDRESS_SPACE, ErrorCode.BUSINESS_OWNER_UPDATE_RESIDENCE_ADDRESS_SPACE_DESCRIPTION);
+
+        ValidUtils.validateMaxLength(request.getBnCurrentAddress(), 100, ErrorCode.BUSINESS_OWNER_UPDATE_CURRENT_ADDRESS_OVER_100, ErrorCode.BUSINESS_OWNER_UPDATE_CURRENT_ADDRESS_OVER_100_DESCRIPTION);
+        ValidUtils.validateNotBlank(request.getBnCurrentAddress(),  ErrorCode.BUSINESS_OWNER_CURRENT_ADDRESS_BLANK, ErrorCode.BUSINESS_OWNER_CURRENT_ADDRESS_BLANK_DESCRIPTION);
+        ValidUtils.validateNotBlank(request.getBnResidenceAddress(), ErrorCode.BUSINESS_OWNER_RESIDENCE_ADDRESS_BLANK, ErrorCode.BUSINESS_OWNER_RESIDENCE_ADDRESS_BLANK_DESCRIPTION);
+
+        ValidUtils.validateNoLeadingTrailingSpace(request.getBnCurrentAddress(), ErrorCode.BUSINESS_OWNER_UPDATE_CURRENT_ADDRESS_SPACE, ErrorCode.BUSINESS_OWNER_UPDATE_CURRENT_ADDRESS_SPACE_DESCRIPTION);
+
+        ValidUtils.validateMaxLength(request.getFullName(), 100, ErrorCode.BUSINESS_OWNER_UPDATE_FULL_NAME_DN_OVER_100, ErrorCode.BUSINESS_OWNER_UPDATE_FULL_NAME_DN_OVER_100_DESCRIPTION);
+        ValidUtils.validateNoLeadingTrailingSpace(request.getFullName(), ErrorCode.BUSINESS_OWNER_FULL_NAME_DN_SPACE, ErrorCode.BUSINESS_OWNER_FULL_NAME_DN_SPACE_DESCRIPTION);
+
+        ValidUtils.validateMaxLength(request.getEmail(), 100, ErrorCode.BUSINESS_OWNER_UPDATE_EMAIL_OVER_100, ErrorCode.BUSINESS_OWNER_UPDATE_EMAIL_OVER_100_DESCRIPTION);
+        ValidUtils.validateMaxLength(request.getWebsite(), 200, ErrorCode.BUSINESS_OWNER_UPDATE_WEBSITE_OVER_100, ErrorCode.BUSINESS_OWNER_UPDATE_WEBSITE_OVER_100_DESCRIPTION);
+
+//        ValidUtils.validateNoLeadingTrailingSpace(request.getIdNumber(), ErrorCode.BUSINESS_OWNER_MST_SPACE, ErrorCode.BUSINESS_OWNER_MST_SPACE_DESCRIPTION);
+//        ValidUtils.validateRegex(request.getIdNumber(),ErrorCode.DIGIT_ONLY_PATTERN, ErrorCode.BUSINESS_OWNER_MST_ONLY_DIGIT, ErrorCode.BUSINESS_OWNER_MST_ONLY_DIGIT_DESCRIPTION);
+
+        validateNotBlankDouble(request.getRatio(), ErrorCode.BUSINESS_OWNER_UPDATE_RATIO_BLANK, ErrorCode.BUSINESS_OWNER_UPDATE_RATIO_BLANK_DESCRIPTION);
+        validateNotBlankDouble(request.getRatio(), ErrorCode.BUSINESS_OWNER_UPDATE_RATIO_BLANK,
+                ErrorCode.BUSINESS_OWNER_UPDATE_RATIO_BLANK_DESCRIPTION);
+
+        validateMax3Digits(request.getRatio(), ErrorCode.BUSINESS_OWNER_UPDATE_RATIO_MAX,
+                ErrorCode.BUSINESS_OWNER_UPDATE_RATIO_MAX_DESCRIPTION);
+
+        validateRange0To100(request.getRatio(), ErrorCode.BUSINESS_OWNER_UPDATE_RATIO_RANGE,
+                ErrorCode.BUSINESS_OWNER_UPDATE_RATIO_RANGE_DESCRIPTION);
+
+        ValidUtils.validateMaxLength(request.getIdPlace(), 100, ErrorCode.BUSINESS_OWNER_UPDATE_MST_PLACE_OVER_100, ErrorCode.BUSINESS_OWNER_UPDATE_MST_PLACE_OVER_100_DESCRIPTION);
+        ValidUtils.validateNoLeadingTrailingSpace(request.getIdPlace(), ErrorCode.BUSINESS_OWNER_MST_PLACE_SPACE, ErrorCode.BUSINESS_OWNER_MST_PLACE_SPACE_DESCRIPTION);
+
+
+        validateNotBlank(request.getBnDob(), ErrorCode.BUSINESS_OWNER_UPDATE_DOB_BLANK,
+                ErrorCode.BUSINESS_OWNER_UPDATE_DOB_BLANK_DESCRIPTION);
+
+        DateValidator.validateDateFormatAndExistence(request.getBnDob(),
+                ErrorCode.BUSINESS_OWNER_UPDATE_DOB_FORMAT,
+                ErrorCode.BUSINESS_OWNER_UPDATE_DOB_FORMAT_DESCRIPTION,
+                ErrorCode.BUSINESS_OWNER_UPDATE_DOB_NOT_REAL,
+                ErrorCode.BUSINESS_OWNER_UPDATE_DOB_NOT_REAL_DESCRIPTION);
+        DateValidator.validateDateBeforeNow(request.getBnDob(),
+                ErrorCode.BUSINESS_OWNER_UPDATE_DOB_NOT_FUTURE,
+                ErrorCode.BUSINESS_OWNER_UPDATE_DOB_FUTURE_DESCRIPTION);
+
+        validateNotBlank(request.getIdDate(), ErrorCode.BUSINESS_OWNER_UPDATE_ID_DATE_BLANK,
+                ErrorCode.BUSINESS_OWNER_UPDATE_ID_DATE_BLANK_DESCRIPTION);
+        validateNotBlank(request.getBnIdDate(), ErrorCode.BUSINESS_OWNER_UPDATE_ID_DATE_BLANK, ErrorCode.BUSINESS_OWNER_UPDATE_ID_DATE_BLANK_DESCRIPTION);
+        DateValidator.validateDateFormatAndExistence(request.getBnIdDate(),
+                ErrorCode.BUSINESS_OWNER_UPDATE_BN_ID_DATE_FORMAT,
+                ErrorCode.BUSINESS_OWNER_UPDATE_BN_ID_DATE_FORMAT_DESCRIPTION,
+                ErrorCode.BUSINESS_OWNER_UPDATE_BN_ID_DATE_NOT_REAL,
+                ErrorCode.BUSINESS_OWNER_UPDATE_BN_ID_DATE_NOT_REAL_DESCRIPTION);
+        DateValidator.validateDateBeforeNow(request.getBnIdDate(),
+                ErrorCode.BUSINESS_OWNER_UPDATE_BN_ID_DATE_NOT_FUTURE,
+                ErrorCode.BUSINESS_OWNER_UPDATE_BN_ID_DATE_FUTURE_DESCRIPTION);
+
+        DateValidator.validateDateFormatAndExistence(request.getIdDate(),
+                ErrorCode.BUSINESS_OWNER_UPDATE_ID_DATE_FORMAT,
+                ErrorCode.BUSINESS_OWNER_UPDATE_ID_DATE_FORMAT_DESCRIPTION,
+                ErrorCode.BUSINESS_OWNER_UPDATE_ID_DATE_NOT_REAL,
+                ErrorCode.BUSINESS_OWNER_UPDATE_ID_DATE_NOT_REAL_DESCRIPTION);
+        DateValidator.validateDateBeforeNow(request.getIdDate(),
+                ErrorCode.BUSINESS_OWNER_UPDATE_ID_DATE_NOT_FUTURE,
+                ErrorCode.BUSINESS_OWNER_UPDATE_ID_DATE_FUTURE_DESCRIPTION);
+
+//        validateNotBlankInt(request.getDistrictId(),
+//                ErrorCode.BUSINESS_DISTRICT_BLANK,
+//                ErrorCode.BUSINESS_DISTRICT_DESCRIPTION);
+        validateNotBlankInt(request.getProvinceId(),
+                ErrorCode.BUSINESS_PROVINCE_BLANK,
+                ErrorCode.BUSINESS_PROVINCE_BLANK_DESCRIPTION);
+        validateNotBlankInt(request.getWardId(),
+                ErrorCode.BUSINESS_WARD_BLANK,
+                ErrorCode.BUSINESS_WARD_BLANK_DESCRIPTION);
+        ValidUtils.validateMaxLength(request.getAddress(),
+                200,
+                ErrorCode.BUSINESS_OWNER_UPDATE_ADDRESS_OVER200,
+                ErrorCode.BUSINESS_OWNER_UPDATE_ADDRESS_OVER200_DESCRIPTION);
+
+        ValidUtils.validateMaxLength(request.getResidenceAddress(),
+                200,
+                ErrorCode.BUSINESS_OWNER_UPDATE_RESIDENT_ADDRESS_OVER200,
+                ErrorCode.BUSINESS_OWNER_UPDATE_RESIDENT_ADDRESS_OVER200_DESCRIPTION);
+        ValidUtils.validateMaxLength(request.getProductionAddress(),
+                100,
+                ErrorCode.BUSINESS_OWNER_UPDATE_PRODUCTION_ADDRESS_OVER200,
+                ErrorCode.BUSINESS_OWNER_UPDATE_PRODUCTION_ADDRESS_OVER200_DESCRIPTION);
+        ValidUtils.validateMaxLength(request.getProfessionBusiness(),
+                100,
+                ErrorCode.BUSINESS_OWNER_UPDATE_PROFESSION_BUSINESS_OVER100,
+                ErrorCode.BUSINESS_OWNER_UPDATE_PROFESSION_BUSINESS_OVER100_DESCRIPTION);
+        validateNotBlank(request.getProfessionBusiness(), ErrorCode.PROFESSION_BLANK, ErrorCode.PROFESSION_BLANK_DESCRIPTION);
+
+        validateNotBlankInt(request.getBusinessOption(),
+                ErrorCode.BUSINESS_OWNER_UPDATE_BUSINESS_OPTION_BLANK,
+                ErrorCode.BUSINESS_OWNER_UPDATE_BUSINESS_OPTION_BLANK_DESCRIPTION);
+
+        ValidUtils.validateMaxLength(request.getBusinessProduct(),
+                100,
+                ErrorCode.BUSINESS_PRODUCT_OVER100,
+                ErrorCode.BUSINESS_PRODUCT_OVER100_DESCRIPTION);
+        validateNotBlank(request.getBusinessProduct(), ErrorCode.BUSINESS_PRODUCT_UPDATE_BLANK,
+                ErrorCode.BUSINESS_PRODUCT_UPDATE_BLANK_DESCRIPTION);
+
+        validateNotBlankInt(request.getBusinessYear(),
+                ErrorCode.BUSINESS_YEAR_UPDATE_BLANK,
+                ErrorCode.BUSINESS_YEAR_UPDATE_BLANK_DESCRIPTION);
+
+        validateYear(request.getBusinessYear(),
+                ErrorCode.BUSINESS_YEAR_UPDATE_MAX,
+                ErrorCode.BUSINESS_YEAR_UPDATE_MAX_DESCRIPTION, ErrorCode.BUSINESS_YEAR_UPDATE_MIN,
+                ErrorCode.BUSINESS_YEAR_UPDATE_MIN_DESCRIPTION);
+
+        validateNotBlankInt(request.getNumberWorking(),
+                ErrorCode.BUSINESS_NUMBER_WORKING_UPDATE_BLANK,
+                ErrorCode.BUSINESS_NUMBER_WORKING_UPDATE_BLANK_DESCRIPTION);
+
+        validateNotBlank(request.getDescribeCustomer(),
+                ErrorCode.BUSINESS_DESCRIBE_CUSTOMER_UPDATE_BLANK,
+                ErrorCode.BUSINESS_DESCRIBE_CUSTOMER_UPDATE_BLANK_DESCRIPTION);
+        ValidUtils.validateMaxLength(request.getDescribeCustomer(),100,
+                ErrorCode.BUSINESS_DESCRIBE_CUSTOMER_UPDATE_OVER100,
+                ErrorCode.BUSINESS_DESCRIBE_CUSTOMER_UPDATE_OVER100_DESCRIPTION
+                );
+
+        validateNotBlank(request.getSellAddress(),
+                ErrorCode.BUSINESS_SALE_ADDRESS_UPDATE_BLANK,
+                ErrorCode.BUSINESS_SALE_ADDRESS_UPDATE_BLANK_DESCRIPTION);
+        ValidUtils.validateMaxLength(request.getSellAddress(),100,
+                ErrorCode.BUSINESS_SALE_ADDRESS_UPDATE_OVER100,
+                ErrorCode.BUSINESS_SALE_ADDRESS_UPDATE_OVER100_DESCRIPTION
+        );
+        log.warn("Number workingh "+request.getNumberWorking() );
+        if (request.getNumberWorking() > 999999) {
+            throw new BusinessException(ErrorCode.BUSINESS_NUMBER_WORKING_UPDATE_MAX, ErrorCode.BUSINESS_NUMBER_WORKING_UPDATE_MAX_DESCRIPTION);
+        }
+        if (request.getNumberWorking() < 0) {
+            throw new BusinessException(ErrorCode.BUSINESS_NUMBER_WORKING_UPDATE_MIN, ErrorCode.BUSINESS_NUMBER_WORKING_UPDATE_MIN_DESCRIPTION);
+        }
+        validateNotBlankInt(request.getStatusBusiness(),
+                ErrorCode.STATUS_BUSINESS_UPDATE_BLANK,
+                ErrorCode.STATUS_BUSINESS_UPDATE_BLANK_DESCRIPTION);
+
+        validateNotBlankInt(request.getStatusFiny(),
+                ErrorCode.STATUS_FINY_UPDATE_BLANK,
+                ErrorCode.STATUS_FINY_UPDATE_BLANK_DESCRIPTION);
+
+        validateNotBlank(request.getActiveStatus(),
+                ErrorCode.STATUS_ACTIVE_UPDATE_BLANK,
+                ErrorCode.STATUS_ACTIVE_UPDATE_BLANK_DESCRIPTION);
+        ValidUtils.validateMaxLength(request.getActiveStatus(),100,
+                ErrorCode.ACTIVE_STATUS_TOO_LONG,
+                ErrorCode.ACTIVE_STATUS_TOO_LONG_DESCRIPTION);
+
+        validateBigDecimalNotBlank(request.getIncome(),
+                ErrorCode.INCOME_UPDATE_BLANK,
+                ErrorCode.INCOME_UPDATE_BLANK_DESCRIPTION,
+                ErrorCode.INCOME_UPDATE_NEGATIVE,
+                ErrorCode.INCOME_UPDATE_NEGATIVE_DESCRIPTION);
+
+        validateBigDecimalNotBlank(request.getProfit(),
+                ErrorCode.PROFIT_UPDATE_BLANK,
+                ErrorCode.PROFIT_UPDATE_BLANK_DESCRIPTION,
+                ErrorCode.PROFIT_UPDATE_NEGATIVE,
+                ErrorCode.PROFIT_UPDATE_NEGATIVE_DESCRIPTION);
+
+        validateNotBlankInteger(request.getBnResidenceWardId(),
+                ErrorCode.BUSINESS_OWNER_RESIDENCE_WARD_ID_BLANK,
+                ErrorCode.BUSINESS_OWNER_RESIDENCE_WARD_ID_BLANK_DESCRIPTION);
+//        validateNotBlankInteger(request.getBnResidenceDistrictId(),
+//                ErrorCode.BUSINESS_OWNER_RESIDENCE_DISTRICT_ID_BLANK,
+//                ErrorCode.BUSINESS_OWNER_RESIDENCE_DISTRICT_ID_BLANK_DESCRIPTION);
+        validateNotBlankInteger(request.getBnResidenceProvinceId(),
+                ErrorCode.BUSINESS_OWNER_RESIDENCE_PROVINCE_ID_BLANK,
+                ErrorCode.BUSINESS_OWNER_RESIDENCE_PROVINCE_ID_BLANK_DESCRIPTION);
+
+    }
+
+    private void validateShareHolder(BusinessShareholderRequest request) {
+        validateNotBlank(request.getShMobile(), ErrorCode.SHAREHOLDER_MOBILE_BLANK, ErrorCode.SHAREHOLDER_MOBILE_BLANK_DESCRIPTION);
+        validateNotBlank(request.getShFullName(), ErrorCode.SHAREHOLDER_FULL_NAME_BLANK, ErrorCode.SHAREHOLDER_FULL_NAME_BLANK_DESCRIPTION);
+        validateNotBlank(request.getShDob(), ErrorCode.SHAREHOLDER_DOB_BLANK, ErrorCode.SHAREHOLDER_DOB_BLANK_DESCRIPTION);
+        validateNotBlank(request.getShIdNumber(), ErrorCode.SHAREHOLDER_ID_NUMBER_BLANK, ErrorCode.SHAREHOLDER_ID_NUMBER_BLANK_DESCRIPTION);
+        validateNotBlank(request.getShIdDate(), ErrorCode.SHAREHOLDER_ID_DATE_BLANK, ErrorCode.SHAREHOLDER_ID_DATE_BLANK_DESCRIPTION);
+        validateNotBlank(request.getShIdPlace(), ErrorCode.SHAREHOLDER_ID_PLACE_BLANK, ErrorCode.SHAREHOLDER_ID_PLACE_BLANK_DESCRIPTION);
+        validateNotBlank(request.getShResidenceAddress(), ErrorCode.SHAREHOLDER_RESIDENCE_ADDRESS_BLANK, ErrorCode.SHAREHOLDER_RESIDENCE_ADDRESS_BLANK_DESCRIPTION);
+        validateNotBlank(request.getShCurrentAddress(), ErrorCode.SHAREHOLDER_CURRENT_ADDRESS_BLANK, ErrorCode.SHAREHOLDER_CURRENT_ADDRESS_BLANK_DESCRIPTION);
+
+        validateNotBlankInteger(request.getShGender(), ErrorCode.SHAREHOLDER_GENDER_BLANK, ErrorCode.SHAREHOLDER_GENDER_BLANK_DESCRIPTION);
+        validateNotBlankInteger(request.getShWardId(), ErrorCode.SHAREHOLDER_WARD_ID_BLANK, ErrorCode.SHAREHOLDER_WARD_ID_BLANK_DESCRIPTION);
+//        validateNotBlankInteger(request.getShDistrictId(), ErrorCode.SHAREHOLDER_DISTRICT_ID_BLANK, ErrorCode.SHAREHOLDER_DISTRICT_ID_BLANK_DESCRIPTION);
+        validateNotBlankInteger(request.getShProvinceId(), ErrorCode.SHAREHOLDER_PROVINCE_ID_BLANK, ErrorCode.SHAREHOLDER_PROVINCE_ID_BLANK_DESCRIPTION);
+        validateNotBlankInteger(request.getShResidenceWardId(), ErrorCode.SHAREHOLDER_RESIDENCE_WARD_ID_BLANK, ErrorCode.SHAREHOLDER_RESIDENCE_WARD_ID_BLANK_DESCRIPTION);
+        validateNotBlankInteger(request.getShResidenceDistrictId(), ErrorCode.SHAREHOLDER_RESIDENCE_PROVINCE_ID_BLANK, ErrorCode.SHAREHOLDER_RESIDENCE_DISTRICT_ID_BLANK_DESCRIPTION);
+//        validateNotBlankInteger(request.getShResidenceProvinceId(), ErrorCode.SHAREHOLDER_RESIDENCE_DISTRICT_ID_BLANK, ErrorCode.SHAREHOLDER_RESIDENCE_PROVINCE_ID_BLANK_DESCRIPTION);
+        validateNotBlankInteger(request.getShLoanStatusFiny(), ErrorCode.SHAREHOLDER_LOAN_STATUS_FINY_BLANK, ErrorCode.SHAREHOLDER_LOAN_STATUS_FINY_BLANK_DESCRIPTION);
+        validateNotBlankInteger(request.getShMaritalStatus(), ErrorCode.SHAREHOLDER_MARTIAL_STATUS_FINY_BLANK, ErrorCode.SHAREHOLDER_MARTIAL_STATUS_FINY_BLANK_DESCRIPTION);
+        validateNotBlankInteger(request.getShGender(), ErrorCode.SHAREHOLDER_GENDER_BLANK, ErrorCode.SHAREHOLDER_GENDER_BLANK_DESCRIPTION);
+        validateNotBlankInteger(request.getShWardId(), ErrorCode.SHAREHOLDER_WARD_ID_BLANK, ErrorCode.SHAREHOLDER_WARD_ID_BLANK_DESCRIPTION);
+//        validateNotBlankInteger(request.getShDistrictId(), ErrorCode.SHAREHOLDER_DISTRICT_ID_BLANK, ErrorCode.SHAREHOLDER_DISTRICT_ID_BLANK_DESCRIPTION);
+        validateNotBlankInteger(request.getShProvinceId(), ErrorCode.SHAREHOLDER_PROVINCE_ID_BLANK, ErrorCode.SHAREHOLDER_PROVINCE_ID_BLANK_DESCRIPTION);
+        validateNotBlankInteger(request.getShResidenceWardId(), ErrorCode.SHAREHOLDER_RESIDENCE_WARD_ID_BLANK, ErrorCode.SHAREHOLDER_RESIDENCE_WARD_ID_BLANK_DESCRIPTION);
+        validateNotBlankInteger(request.getShResidenceDistrictId(), ErrorCode.SHAREHOLDER_RESIDENCE_PROVINCE_ID_BLANK, ErrorCode.SHAREHOLDER_RESIDENCE_DISTRICT_ID_BLANK_DESCRIPTION);
+//        validateNotBlankInteger(request.getShResidenceProvinceId(), ErrorCode.SHAREHOLDER_RESIDENCE_DISTRICT_ID_BLANK, ErrorCode.SHAREHOLDER_RESIDENCE_PROVINCE_ID_BLANK_DESCRIPTION);
+        validateNotBlankInteger(request.getShLoanStatusFiny(), ErrorCode.SHAREHOLDER_LOAN_STATUS_FINY_BLANK, ErrorCode.SHAREHOLDER_LOAN_STATUS_FINY_BLANK_DESCRIPTION);
+        validateNotBlankInteger(request.getShMaritalStatus(), ErrorCode.SHAREHOLDER_MARTIAL_STATUS_FINY_BLANK, ErrorCode.SHAREHOLDER_MARTIAL_STATUS_FINY_BLANK_DESCRIPTION);
+
+        validateOneHundredCharacter(request.getShResidenceAddress(), ErrorCode.SHAREHOLDER_RESIDENCE_ADDRESS_TOO_LONG, ErrorCode.SHAREHOLDER_RESIDENCE_ADDRESS_TOO_LONG_DESCRIPTION);
+        validateOneHundredCharacter(request.getShCurrentAddress(), ErrorCode.SHAREHOLDER_CURRENT_ADDRESS_TOO_LONG, ErrorCode.SHAREHOLDER_CURRENT_ADDRESS_TOO_LONG_DESCRIPTION);
+        validateOneHundredCharacter(request.getShIdPlace(), ErrorCode.SHAREHOLDER_ID_PLACE_TOO_LONG, ErrorCode.SHAREHOLDER_ID_PLACE_TOO_LONG_DESCRIPTION);
+        validateOneHundredCharacter(request.getShResidenceAddress(), ErrorCode.SHAREHOLDER_RESIDENCE_ADDRESS_TOO_LONG, ErrorCode.SHAREHOLDER_RESIDENCE_ADDRESS_TOO_LONG_DESCRIPTION);
+        validateOneHundredCharacter(request.getShCurrentAddress(), ErrorCode.SHAREHOLDER_CURRENT_ADDRESS_TOO_LONG, ErrorCode.SHAREHOLDER_CURRENT_ADDRESS_TOO_LONG_DESCRIPTION);
+        validateOneHundredCharacter(request.getShIdPlace(), ErrorCode.SHAREHOLDER_ID_PLACE_TOO_LONG, ErrorCode.SHAREHOLDER_ID_PLACE_TOO_LONG_DESCRIPTION);
+        DateValidator.validateDateFormatAndExistence(request.getShDob(), ErrorCode.SHAREHOLDER_DOB_FORMAT, ErrorCode.SHAREHOLDER_DOB_FORMAT_DESCRIPTION, ErrorCode.SHAREHOLDER_DOB_IS_REAL, ErrorCode.SHAREHOLDER_DOB_IS_REAL_DESCRIPTION);
+        DateValidator.validateDateBeforeNow(request.getShDob(), ErrorCode.SHAREHOLDER_DOB_FUTURE, ErrorCode.SHAREHOLDER_DOB_FUTURE_DESCRIPTION);
+        DateValidator.validateDateFormatAndExistence(request.getShIdDate(), ErrorCode.SHAREHOLDER_ID_DATE_FORMAT, ErrorCode.SHAREHOLDER_ID_DATE_FORMAT_DESCRIPTION, ErrorCode.SHAREHOLDER_ID_DATE_FORMAT_REAL, ErrorCode.SHAREHOLDER_ID_DATE_FORMAT_REAL_DESCRIPTION);
+        DateValidator.validateRealDate(request.getShDob(), ErrorCode.SHAREHOLDER_DOB_REAL, ErrorCode.SHAREHOLDER_DOB_REAL_DESCRIPTION);
+        DateValidator.validateRealDate(request.getShIdDate(), ErrorCode.SHAREHOLDER_ID_DATE_REAL, ErrorCode.SHAREHOLDER_ID_DATE_REAL_DESCRIPTION);
+
+        DateValidator.validateRealDateNow(request.getShIdDate(), ErrorCode.SHAREHOLDER_ID_DATE_REAL_NOW, ErrorCode.SHAREHOLDER_ID_DATE_REAL_DESCRIPTION_NOW);
+
+
+        validateSpace(request.getShFullName(), ErrorCode.SHAREHOLDER_FULL_NAME_SPACE, ErrorCode.SHAREHOLDER_FULL_NAME_SPACE_DESCRIPTION);
+        validateSpace(request.getShMobile(), ErrorCode.SHAREHOLDER_MOBILE_SPACE, ErrorCode.SHAREHOLDER_MOBILE_SPACE_DESCRIPTION);
+        validateSpace(request.getShIdNumber(), ErrorCode.SHAREHOLDER_ID_NUMBER_SPACE, ErrorCode.SHAREHOLDER_ID_NUMBER_SPACE_DESCRIPTION);
+
+        if (request.getShFullName() == null || request.getShFullName().trim().length() > 100 || !request.getShFullName().matches("^[\\p{L} ]+$")) {
+            throw new BusinessException(ErrorCode.SHAREHOLDER_FULL_NAME_VALID, ErrorCode.SHAREHOLDER_FULL_NAME_VALID_DESCRIPTION);
+        }
+
+        if (!request.getShIdNumber().matches("^\\d{12}$")) {
+            throw new BusinessException(ErrorCode.SHAREHOLDER_ID_NUMBER_VALID, ErrorCode.SHAREHOLDER_ID_NUMBER_VALID_DESCRIPTION);
+        }
+
+        if (!request.getShMobile().matches("^\\d{10}$")) {
+            throw new BusinessException(ErrorCode.SHAREHOLDER_MOBILE_INVALID, ErrorCode.SHAREHOLDER_MOBILE_INVALID_DESCRIPTION);
+        }
+    }
+
+    private void validateShareholderList(List<BusinessShareholderRequest> shareholderRequests) {
+        if (shareholderRequests == null || shareholderRequests.isEmpty()) {
+            throw new BusinessException(ErrorCode.SHAREHOLDER_LIST_EMPTY, ErrorCode.SHAREHOLDER_LIST_EMPTY_DESCRIPTION);
+
+        }
+        for (BusinessShareholderRequest shareholder : shareholderRequests) {
+            validateShareHolder(shareholder);
+        }
+    }
+
+    private void validateGuardian(GuardianRequest request) {
+        validateNotBlank(request.getGuardName(), ErrorCode.GUARDIAN_FULL_NAME_BLANK, ErrorCode.GUARDIAN_FULL_NAME_BLANK_DESCRIPTION);
+        validateNotBlank(request.getGuardMobile(), ErrorCode.GUARDIAN_MOBILE_BLANK, ErrorCode.GUARDIAN_MOBILE_BLANK_DESCRIPTION);
+        validateNotBlank(request.getGuardBirth(), ErrorCode.GUARDIAN_BIRTHDAY_BLANK, ErrorCode.GUARDIAN_BIRTHDAY_BLANK_DESCRIPTION);
+        validateNotBlank(request.getGuardMaritalStatus(), ErrorCode.GUARDIAN_MARITAL_BLANK, ErrorCode.GUARDIAN_MARITAL_BLANK_DESCRIPTION);
+        validateNotBlank(request.getGuardIdNumber(), ErrorCode.GUARDIAN_ID_NUMBER_BLANK, ErrorCode.GUARDIAN_ID_NUMBER_BLANK_DESCRIPTION);
+        validateNotBlank(request.getGuardIdDate(), ErrorCode.GUARDIAN_ID_DATE_BLANK, ErrorCode.GUARDIAN_ID_DATE_BLANK_DESCRIPTION);
+        validateNotBlank(request.getGuardIdPlace(), ErrorCode.GUARDIAN_ID_PLACE_BLANK, ErrorCode.GUARDIAN_ID_PLACE_BLANK_DESCRIPTION);
+        validateNotBlank(request.getGuardCurrentAddress(), ErrorCode.GUARDIAN_CURRENT_ADDRESS_BLANK, ErrorCode.GUARDIAN_CURRENT_ADDRESS_BLANK_DESCRIPTION);
+        validateNotBlank(request.getGuardAddress(), ErrorCode.GUARDIAN_ADDRESS_BLANK, ErrorCode.GUARDIAN_ADDRESS_BLANK_DESCRIPTION);
+        validateNotBlankInteger(request.getGuardGender(), ErrorCode.GUARDIAN_GENDER_BLANK, ErrorCode.GUARDIAN_GENDER_BLANK_DESCRIPTION);
+        validateNotBlankInteger(request.getGuardWardId(), ErrorCode.GUARDIAN_WARD_ID_BLANK, ErrorCode.GUARDIAN_WARD_ID_BLANK_DESCRIPTION);
+//        validateNotBlankInteger(request.getGuardDistrictId(), ErrorCode.GUARDIAN_DISTRICT_ID_BLANK, ErrorCode.GUARDIAN_DISTRICT_ID_BLANK_DESCRIPTION);
+        validateNotBlankInteger(request.getGuardProvinceId(), ErrorCode.GUARDIAN_PROVINCE_ID_BLANK, ErrorCode.GUARDIAN_PROVINCE_ID_BLANK_DESCRIPTION);
+        validateNotBlankInteger(request.getGuardResidenceWardId(), ErrorCode.GUARDIAN_RESIDENCE_WARD_ID_BLANK, ErrorCode.GUARDIAN_RESIDENCE_WARD_ID_BLANK_DESCRIPTION);
+//        validateNotBlankInteger(request.getGuardResidenceDistrictId(), ErrorCode.GUARDIAN_RESIDENCE_DISTRICT_ID_BLANK, ErrorCode.GUARDIAN_RESIDENCE_DISTRICT_ID_BLANK_DESCRIPTION);
+        validateNotBlankInteger(request.getGuardResidenceProvinceId(), ErrorCode.GUARDIAN_RESIDENCE_PROVINCE_ID_BLANK, ErrorCode.GUARDIAN_RESIDENCE_PROVINCE_ID_BLANK_DESCRIPTION);
+        validateNotBlankInteger(request.getGuardLoanStatusFiny(), ErrorCode.GUARDIAN_LOAN_STATUS_FINY_BLANK, ErrorCode.GUARDIAN_LOAN_STATUS_FINY_BLANK_DESCRIPTION);
+
+        DateValidator.validateDateFormatAndExistence(request.getGuardIdDate(), ErrorCode.GUARDIAN_ID_DATE_FORMAT, ErrorCode.GUARDIAN_ID_DATE_FORMAT_DESCRIPTION, ErrorCode.GUARDIAN_ID_DATE_FORMAT_IS_REAL, ErrorCode.GUARDIAN_ID_DATE_FORMAT_IS_REAL_DESCRIPTION);
+        DateValidator.validateDateFormatAndExistence(request.getGuardBirth(), ErrorCode.GUARDIAN_BIRTHDAY_FORMAT, ErrorCode.GUARDIAN_BIRTHDAY_FORMAT_DESCRIPTION, ErrorCode.GUARDIAN_BIRTHDAY_FORMAT_IS_REAL, ErrorCode.GUARDIAN_BIRTHDAY_FORMAT_IS_REAL_DESCRIPTION);
+        DateValidator.validateRealDate(request.getGuardIdDate(), ErrorCode.GUARDIAN_ID_DATE_REAL, ErrorCode.GUARDIAN_ID_DATE_REAL_DESCRIPTION);
+
+        DateValidator.validateRealDateNow(request.getGuardIdDate(), ErrorCode.GUARDIAN_ID_DATE_REAL_NOW, ErrorCode.GUARDIAN_ID_DATE_REAL_DESCRIPTION_NOW);
+        DateValidator.validateDateBeforeNow(request.getGuardIdDate(), ErrorCode.GUARDIAN_ID_DATE_REAL_NOW, ErrorCode.GUARDIAN_ID_DATE_REAL_DESCRIPTION_NOW);
+
+
+        DateValidator.validateRealDate(request.getGuardBirth(), ErrorCode.GUARDIAN_DOB_REAL, ErrorCode.GUARDIAN_DOB_REAL_DESCRIPTION);
+        DateValidator.validateDateBeforeNow(request.getGuardBirth(), ErrorCode.GUARDIAN_DOB_FUTURE, ErrorCode.GUARDIAN_DOB_FUTURE_DESCRIPTION);
+        validateSpace(request.getGuardMobile(), ErrorCode.GUARDIAN_MOBILE_SPACE, ErrorCode.GUARDIAN_MOBILE_SPACE_DESCRIPTION);
+        validateSpace(request.getGuardIdNumber(), ErrorCode.GUARDIAN_ID_NUMBER_SPACE, ErrorCode.GUARDIAN_ID_NUMBER_SPACE_DESCRIPTION);
+        validateSpace(request.getGuardName(), ErrorCode.GUARDIAN_FULL_NAME_SPACE, ErrorCode.GUARDIAN_FULL_NAME_SPACE_DESCRIPTION);
+
+        if (!request.getGuardMobile().matches("^\\d{10}$")) {
+            throw new BusinessException(ErrorCode.GUARDIAN_MOBILE_INVALID, ErrorCode.GUARDIAN_MOBILE_INVALID_DESCRIPTION);
+        }
+
+        if (!request.getGuardIdNumber().matches("^\\d{12}$")) {
+            throw new BusinessException(ErrorCode.GUARDIAN_ID_NUMBER_VALID, ErrorCode.GUARDIAN_ID_NUMBER_VALID_DESCRIPTION);
+        }
+
+        if (request.getGuardName().trim().length() > 100 || !request.getGuardName().matches("^[\\p{L} ]+$")) {
+            throw new BusinessException(ErrorCode.GUARDIAN_FULL_NAME_VALID, ErrorCode.GUARDIAN_FULL_NAME_VALID_DESCRIPTION);
+        }
+
+        validateOneHundredCharacter(request.getGuardAddress(), ErrorCode.GUARD_ADDRESS_TOO_LONG, ErrorCode.GUARD_ADDRESS_TOO_LONG_DESCRIPTION);
+        validateOneHundredCharacter(request.getGuardCurrentAddress(), ErrorCode.GUARD_CURRENT_ADDRESS_TOO_LONG, ErrorCode.GUARD_CURRENT_ADDRESS_TOO_LONG_DESCRIPTION);
+        validateOneHundredCharacter(request.getGuardIdPlace(), ErrorCode.GUARD_ID_PLACE_TOO_LONG, ErrorCode.GUARD_ID_PLACE_TOO_LONG_DESCRIPTION);
+
+    }
+
+    private void validateGuardianList(List<GuardianRequest> guardianRequestList) {
+        if (guardianRequestList == null || guardianRequestList.isEmpty()) {
+            throw new BusinessException(ErrorCode.GUARDIAN_LIST_EMPTY, ErrorCode.GUARDIAN_LIST_EMPTY_DESCRIPTION);
+
+        }
+        for (GuardianRequest guardianRequest : guardianRequestList) {
+            validateGuardian(guardianRequest);
+        }
+    }
+
+    private void validateLoanCar(LoanRegistrationExtraRequest request) {
+        validateNotBlank(request.getVehicleName(), ErrorCode.VEHICLE_NAME_BLANK, ErrorCode.VEHICLE_NAME_BLANK_DESCRIPTION);
+        validateNotBlank(request.getChassisNumber(), ErrorCode.CHASSIS_NUMBER_BLANK, ErrorCode.CHASSIS_NUMBER_BLANK_DESCRIPTION);
+        validateNotBlank(request.getEngineNumber(), ErrorCode.ENGINE_NUMBER_BLANK, ErrorCode.ENGINE_NUMBER_BLANK_DESCRIPTION);
+        validateNotBlank(request.getVehicleNumber(), ErrorCode.VEHICLE_NUMBER_BLANK, ErrorCode.VEHICLE_NUMBER_BLANK_DESCRIPTION);
+        validateNotBlank(request.getVehicleType(), ErrorCode.VEHICLE_TYPE_BLANK, ErrorCode.VEHICLE_TYPE_BLANK_DESCRIPTION);
+        validateNotBlank(request.getVehicleBrand(), ErrorCode.VEHICLE_BRAND_BLANK, ErrorCode.VEHICLE_BRAND_BLANK_DESCRIPTION);
+        validateNotBlank(request.getVehicleRegistrationIssued(), ErrorCode.VEHICLE_REGISTRATION_ISSUED_BLANK, ErrorCode.VEHICLE_REGISTRATION_ISSUED_BLANK_DESCRIPTION);
+        validateNotBlank(request.getVehicleRegistrationDate(), ErrorCode.VEHICLE_REGISTRATION_DATE_BLANK, ErrorCode.VEHICLE_REGISTRATION_DATE_BLANK_DESCRIPTION);
+        validateNotBlank(request.getRegistrationNumber(), ErrorCode.REGISTER_NUMBER_BLANK, ErrorCode.REGISTER_NUMBER_BLANK_DESCRIPTION);
+        validateNotBlank(request.getFuel(), ErrorCode.FUEL_BLANK, ErrorCode.FUEL_BLANK_DESCRIPTION);
+        validateNotBlank(request.getVehicleId(), ErrorCode.VEHICLE_ID_BLANK, ErrorCode.VEHICLE_ID_BLANK_DESCRIPTION);
+        validateNotBlank(request.getVehicleOrigin(), ErrorCode.VEHICLE_ORIGIN_BLANK, ErrorCode.VEHICLE_ORIGIN_BLANK_DESCRIPTION);
+        validateNotBlank(request.getVehicleColor(), ErrorCode.VEHICLE_COLOR_BLANK, ErrorCode.VEHICLE_COLOR_BLANK_DESCRIPTION);
+        validateNotBlank(request.getAddressVehicleDocuments(), ErrorCode.ADDRESS_VEHICLE_DOCUMENT_BLANK, ErrorCode.ADDRESS_VEHICLE_DOCUMENT_BLANK_DESCRIPTION);
+        validateNotBlank(request.getNumberPeopleAllow(), ErrorCode.NUMBER_PEOPLE_ALLOW_BLANK, ErrorCode.NUMBER_PEOPLE_ALLOW_BLANK_DESCRIPTION);
+        validateSpace(request.getRegSeriNumber(), ErrorCode.REGISTRATION_SERI_NUMBER_SPACE, ErrorCode.REGISTRATION_SERI_NUMBER_SPACE_DESCRIPTION);
+        validateSpace(request.getVehicleName(), ErrorCode.VEHICLE_NAME_SPACE, ErrorCode.VEHICLE_NAME_SPACE_DESCRIPTION);
+        validateNotBlankInteger(request.getVehYearManufacture(), ErrorCode.YEAR_MANUFACTURE_BLANK, ErrorCode.YEAR_MANUFACTURE_BLANK_DESCRIPTION);
+        validateNotBlankInteger(request.getMarket(), ErrorCode.MARKET_BLANK, ErrorCode.MARKET_BLANK_DESCRIPTION);
+        validateNotBlankInteger(request.getCommercial(), ErrorCode.COMMERCIAL_BLANK, ErrorCode.COMMERCIAL_BLANK_DESCRIPTION);
+        validateNotBlankInteger(request.getVehUseFor(), ErrorCode.USE_FOR_BLANK, ErrorCode.USE_FOR_BLANK_DESCRIPTION);
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/uuuu").withResolverStyle(ResolverStyle.STRICT);
+        if (request.getRegPeriod() != null && !request.getRegPeriod().trim().isEmpty()) {
+
+            try {
+                LocalDate.parse(request.getRegPeriod(), formatter);
+            } catch (DateTimeParseException e) {
+                throw new BusinessException(ErrorCode.REG_PERIOD_FORMAT, ErrorCode.REG_PERIOD_FORMAT_DESCRIPTION);
+            }
+        }
+
+        if (request.getRegPeriod() != null && !request.getRegPeriod().trim().isEmpty()) {
+            if (!request.getRegPeriod().matches("^\\d{2}/\\d{2}/\\d{4}$")) {
+                throw new BusinessException(ErrorCode.VEHICLE_REGPERIOD_DATE_FORMAT, ErrorCode.VEHICLE_REGPERIOD_DATE_FORMAT_DESCRIPTION);
+            }
+
+            try {
+                LocalDate.parse(request.getRegPeriod(), formatter);
+            } catch (DateTimeParseException e) {
+                throw new BusinessException(ErrorCode.VEHICLE_REGPERIOD_DATE_FORMAT, ErrorCode.VEHICLE_REGPERIOD_DATE_FORMAT_DESCRIPTION);
+            }
+        }
+
+        if (request.getRegPeriod() != null && !request.getRegPeriod().trim().isEmpty()) {
+            LocalDate date;
+            try {
+                date = LocalDate.parse(request.getRegPeriod().trim(), formatter);
+
+            } catch (DateTimeParseException ex) {
+                throw new BusinessException(ErrorCode.VEHICLE_REGPERIOD_DATE_FORMAT, ErrorCode.VEHICLE_REGPERIOD_DATE_FORMAT_DESCRIPTION);
+            }
+
+//        if (!date.isBefore(LocalDate.now())) {
+//            throw new BusinessException(errorCode, errorDesc);
+//        }
+
+            if (date.getYear() < 1900) {
+                throw new BusinessException(ErrorCode.VEHICLE_REGPERIOD_DATE_FORMAT, ErrorCode.VEHICLE_REGPERIOD_DATE_FORMAT_DESCRIPTION);
+            }
+        }
+
+        if (request.getLoanPrice() == null) {
+            throw new BusinessException(ErrorCode.LOAN_PRICE_BLANK, ErrorCode.LOAN_PRICE_BLANK_DESCRIPTION);
+        }
+
+        if (request.getVehicleName().trim().length() > 100 || !request.getVehicleName().matches("^[\\p{L}\\s]+$")) {
+            throw new BusinessException(ErrorCode.VEHICLE_NAME_TOO_LONG, ErrorCode.VEHICLE_NAME_TOO_LONG_DESCRIPTION);
+        }
+
+        String seri = request.getRegSeriNumber();
+        if (seri != null && !seri.trim().isEmpty()) {
+            seri = seri.trim();
+            if (seri.length() > 20 || !seri.matches("^[a-zA-Z0-9]+$")) {
+                throw new BusinessException(
+                        ErrorCode.REGISTRATION_SERI_NUMBER_TOO_LONG,
+                        ErrorCode.REGISTRATION_SERI_NUMBER_TOO_LONG_DESCRIPTION
+                );
+            }
+        }
+
+        if (request.getVehYearManufacture() < 1900 || request.getVehYearManufacture() > 2025) {
+            throw new BusinessException(ErrorCode.YEAR_MANUFACTURE_VALID, ErrorCode.YEAR_MANUFACTURE_VALID_DESCRIPTION);
+        }
+
+
+//        if (request.getSanction() < 0 || request.getSanction() > 10000000000) {
+//            throw new BusinessException(ErrorCode.SANCTION_VALID, ErrorCode.SANCTION_VALID_DESCRIPTION);
+//        }
+
+        if (request.getSanction() != null) {
+            BigDecimal zero = BigDecimal.ZERO;
+            BigDecimal tenBillion = new BigDecimal("10000000000");
+
+            if (request.getSanction().compareTo(zero) < 0 ||
+                    request.getSanction().compareTo(tenBillion) > 0) {
+                throw new BusinessException(ErrorCode.SANCTION_VALID, ErrorCode.SANCTION_VALID_DESCRIPTION);
+            }
+        }
+
+        if (request.getVehiclePrice() != null) {
+            if (request.getVehiclePrice().compareTo(BigDecimal.ZERO) < 0 || request.getVehiclePrice().compareTo(new BigDecimal("1000000000000")) > 0) {
+                throw new BusinessException(ErrorCode.VEHICLE_PRICE_VALID, ErrorCode.VEHICLE_PRICE_VALID_DESCRIPTION);
+            }
+        }
+
+        if (request.getLoanPrice().compareTo(BigDecimal.ZERO) < 0 || request.getLoanPrice().compareTo(new BigDecimal("1000000000000")) > 0) {
+            throw new BusinessException(ErrorCode.LOAN_PRICE_VALID, ErrorCode.LOAN_PRICE_VALID_DESCRIPTION);
+        }
+
+        if (!request.getVehicleColor().matches("^[\\p{L} ]+$")) {
+            throw new BusinessException(ErrorCode.ERROR, ErrorCode.VEHICLE_COLOR_NUMBER_DESCRIPTION);
+        }
+
+        if (!request.getNumberPeopleAllow().matches("^[0-9]+$")) {
+            throw new BusinessException(ErrorCode.ERROR, ErrorCode.NUMBER_PEOPLE_ALLOW);
+        }
+        if (request.getNumberPeopleAllow().length() > 20) {
+            throw new BusinessException(ErrorCode.ERROR, ErrorCode.NUMBER_PEOPLE_ALLOW_MAX);
+        }
+
+        DateValidator.validateDateFormat(request.getVehicleRegistrationDate(), ErrorCode.VEHICLE_REGISTRATION_DATE_FORMAT, ErrorCode.VEHICLE_REGISTRATION_DATE_FORMAT_DESCRIPTION);
+        DateValidator.validateRealDate(request.getVehicleRegistrationDate(), ErrorCode.VEHICLE_REGISTRATION_DATE_REAL, ErrorCode.VEHICLE_REGISTRATION_DATE_REAL_DESCRIPTION);
+        DateValidator.validateRealDateNow(request.getVehicleRegistrationDate(), ErrorCode.VEHICLE_REGISTRATION_DATE_NOW, ErrorCode.VEHICLE_REGISTRATION_DATE_FORMAT_DESCRIPTION_NOW);
+
+//        DateValidator.validateDateFormat(request.getRegPeriod(), ErrorCode.VEHICLE_REGPERIOD_DATE_FORMAT, ErrorCode.VEHICLE_REGPERIOD_DATE_FORMAT_DESCRIPTION);
+//        DateValidator.validateRealDate(request.getRegPeriod(), ErrorCode.VEHICLE_REGPERIOD_DATE_REAL, ErrorCode.VEHICLE_REGPERIOD_DATE_REAL_DESCRIPTION);
+
+        validateTwentyCharacter(request.getRegLoad(), ErrorCode.ASSET_REG_LOAD_TOO_LONG, ErrorCode.ASSET_REG_LOAD_TOO_LONG_DESCRIPTION);
+        validateFiftyCharacter(request.getVehicleNumber(), ErrorCode.VEHICLE_NUMBER_TOO_LONG, ErrorCode.VEHICLE_NUMBER_TOO_LONG_DESCRIPTION);
+        validateFiftyCharacter(request.getRegistrationNumber(), ErrorCode.REGISTRATION_NUMBER_TOO_LONG, ErrorCode.REGISTRATION_NUMBER_TOO_LONG_DESCRIPTION);
+        validateTwentyCharacter(request.getRegSeriNumber(), ErrorCode.ASSET_REG_SERI_NUMBER_TOO_LONG, ErrorCode.ASSET_REG_SERI_NUMBER_TOO_LONG_DESCRIPTION);
+        validateFiftyCharacter(request.getChassisNumber(), ErrorCode.CHASSIS_NUMBER_TOO_LONG, ErrorCode.CHASSIS_NUMBER_TOO_LONG_DESCRIPTION);
+        validateFiftyCharacter(request.getEngineNumber(), ErrorCode.ENGINE_NUMBER_TOO_LONG, ErrorCode.ENGINE_NUMBER_TOO_LONG_DESCRIPTION);
+        validateTwentyCharacter(request.getFuel(), ErrorCode.FUEL_TOO_LONG, ErrorCode.FUEL_TOO_LONG_DESCRIPTION);
+        validateTwentyCharacter(request.getVehicleOrigin(), ErrorCode.VEHICLE_ORIGIN_TOO_LONG, ErrorCode.VEHICLE_ORIGIN_TOO_LONG_DESCRIPTION);
+        validateTwentyCharacter(request.getVehicleColor(), ErrorCode.VEHICLE_COLOR_TOO_LONG, ErrorCode.VEHICLE_COLOR_TOO_LONG_DESCRIPTION);
+        validateTwentyCharacter(request.getTransPor(), ErrorCode.TRANSPOR_TOO_LONG, ErrorCode.TRANSPOR_TOO_LONG_DESCRIPTION);
+        validateTwentyCharacter(request.getRenovation(), ErrorCode.RENOVATION_TOO_LONG, ErrorCode.RENOVATION_TOO_LONG_DESCRIPTION);
+        validateTwentyCharacter(request.getVehicleInspectionModelCode(), ErrorCode.MODEL_CODE_TOO_LONG, ErrorCode.MODEL_CODE_TOO_LONG_DESCRIPTION);
+        validateOneHundredCharacter(request.getAddressVehicleDocuments(), ErrorCode.ADDRESS_VEHICLE_DOCUMENT_TOO_LONG, ErrorCode.ADDRESS_VEHICLE_DOCUMENT_TOO_LONG_DESCRIPTION);
+        validateOneHundredCharacter(request.getVehicleRegistrationIssued(), ErrorCode.IDDATE_CAR_DOCUMENT_TOO_LONG, ErrorCode.AIDDATE_CAR_DOCUMENT_TOO_LONG_DESCRIPTION);
+//        validateTenBillion(request.getSanction(), ErrorCode.ERROR, ErrorCode.SANCTION_CAR_TENBILLION);
+
+        DateValidator.validateDateFormatAndExistence(request.getVehicleRegistrationDate(),
+                ErrorCode.BUSINESS_OWNER_UPDATE_DOB_NOT_REAL,
+                ErrorCode.BUSINESS_OWNER_UPDATE_DOB_NOT_REAL_DESCRIPTION,
+                ErrorCode.VEHICLE_RES_DATE_WRONG_FORMAT,
+                ErrorCode.VEHICLE_RES_DATE_WRONG_FORMAT_DESCRIPTION);
+
+        ValidUtils.validateMaxLength(request.getAddressVehicleDocuments(),200,
+                ErrorCode.VEHICLE_ADDRESS_UPDATE_OVER150,
+                ErrorCode.VEHICLE_ADDRESS_UPDATE_OVER150_DESCRIPTION);
+
+        ValidUtils.validateMaxLength(request.getVehicleRegistrationIssued(),100,
+                ErrorCode.VEHICLE_REGISTRATION_UPDATE_OVER100,
+                ErrorCode.VEHICLE_REGISTRATION_UPDATE_OVER100_DESCRIPTION);
+
+    }
+
+    private void validateLoanCarList(List<LoanRegistrationExtraRequest> list) {
+        if (list == null || list.isEmpty()) {
+            throw new BusinessException(ErrorCode.CAR_LIST_EMPTY, ErrorCode.CAR_LIST_EMPTY_DESCRIPTION);
+
+        }
+        for (LoanRegistrationExtraRequest loanRegistrationExtraRequest : list) {
+            validateLoanCar(loanRegistrationExtraRequest);
+        }
+    }
+}

@@ -1,0 +1,11 @@
+rmdir /s /q D:\kafka\data
+cd /d D:\Download\kafka_2.13-4.1.1
+.\bin\windows\kafka-storage.bat random-uuid
+.\bin\windows\kafka-storage.bat format --config .\config\kraft\server.properties --cluster-id dCpwmsffRCGrhldZrbE7Cg
+
+.\bin\windows\kafka-server-start.bat .\config\kraft\server.properties
+
+
+
+cloudflared
+cloudflared-windows-amd64.exe tunnel run thaidt-tunnel

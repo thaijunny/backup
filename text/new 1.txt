@@ -1,0 +1,3 @@
+đổi refresh token trong file db_migration (lấy refresh token mới nhất trong db test)
+build file migration trên db product ở project finy trước vì sms k có migration
+rồi build bình thường thui haha

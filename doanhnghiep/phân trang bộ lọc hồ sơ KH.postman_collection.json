@@ -1,0 +1,536 @@
+{
+  "info": {
+    "_postman_id": "79837e7b-e9da-42b7-a4ff-eb9f02d77631",
+    "name": "phân trang bộ lọc hồ sơ KH",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "37903354",
+    "_collection_link": "https://go.postman.co/collection/39734536-79837e7b-e9da-42b7-a4ff-eb9f02d77631?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "danh sách khoản vay _ excel",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ2YW5oYW5odGVzdCIsImlhdCI6MTc3MzAyNjE1OSwiZXhwIjoxNzczMTEyNTU5fQ.GFT21bo4C0bfKO6hXuEgGI-OQmW4BTeSYl4vXFG4XBlt9_p-d8BpUgLWp4hFqvT5_YIfrljbKThOyzmCMKH0Ew",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{url}}/api/v1/loan-export-excel?lnFromDate=01/08/2025&lnToDate=01/12/2025",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "loan-export-excel"
+          ],
+          "query": [
+            {
+              "key": "id",
+              "value": "5398",
+              "disabled": true
+            },
+            {
+              "key": "custId",
+              "value": null,
+              "disabled": true
+            },
+            {
+              "key": "term",
+              "value": "9",
+              "description": "kỳ hạn vay",
+              "disabled": true
+            },
+            {
+              "key": "loanType",
+              "value": "18",
+              "description": "loại sản phẩm vay",
+              "disabled": true
+            },
+            {
+              "key": "fullName",
+              "value": "Công ty",
+              "description": "tên cá nhân or DN",
+              "disabled": true
+            },
+            {
+              "key": "lnFromDate",
+              "value": "01/08/2025",
+              "description": "ngày bắt đầu giải ngân"
+            },
+            {
+              "key": "lnToDate",
+              "value": "01/12/2025",
+              "description": "ngày kết thúc giải ngân"
+            },
+            {
+              "key": "crFromDate",
+              "value": "01/08/2025",
+              "description": "ngày bắt đầu tạo hồ sơ",
+              "disabled": true
+            },
+            {
+              "key": "crToDate",
+              "value": "01/12/2025",
+              "description": "ngày kết thúc tạo hồ sơ",
+              "disabled": true
+            },
+            {
+              "key": "loanAmount",
+              "value": "1000000000",
+              "description": "số tiền giải ngân",
+              "disabled": true
+            },
+            {
+              "key": "mobile",
+              "value": "0953224546",
+              "description": "số điện thoại",
+              "disabled": true
+            },
+            {
+              "key": "idNumber",
+              "value": "00012889956",
+              "description": "số giấy tờ",
+              "disabled": true
+            },
+            {
+              "key": "documentNo",
+              "value": "test_3010",
+              "description": "số hợp đồng",
+              "disabled": true
+            },
+            {
+              "key": "saleId",
+              "value": "",
+              "description": "id sale",
+              "disabled": true
+            },
+            {
+              "key": "lcClass",
+              "value": "B0",
+              "description": "nhóm nợ",
+              "disabled": true
+            },
+            {
+              "key": "status",
+              "value": "0",
+              "description": "trạng thái hồ sơ",
+              "type": "text",
+              "disabled": true
+            },
+            {
+              "key": "custType",
+              "value": "2",
+              "disabled": true
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "danh sách khoản vay _ V1",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ2YW5oYW5odGVzdCIsImlhdCI6MTc3MjY4MDgxOSwiZXhwIjoxNzcyNzY3MjE5fQ.iFskV7XGaNNSpWaacTZ8GvOBZKYnlLBq_dQZGhlddqpJDPi0Z9Orfs3Ib1SJQDfeAmk6j3i6FbfbEYTkOXnk1g",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{url}}/api/v1/get-loan-list?page=1&pageSize=100&id&custId&loanType=18,19&lnFromDate=01/08/2025&lnToDate=01/12/2025",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "get-loan-list"
+          ],
+          "query": [
+            {
+              "key": "page",
+              "value": "1"
+            },
+            {
+              "key": "pageSize",
+              "value": "100"
+            },
+            {
+              "key": "id",
+              "value": null
+            },
+            {
+              "key": "custId",
+              "value": null
+            },
+            {
+              "key": "term",
+              "value": "9",
+              "description": "kỳ hạn vay",
+              "disabled": true
+            },
+            {
+              "key": "loanType",
+              "value": "18,19",
+              "description": "loại sản phẩm vay"
+            },
+            {
+              "key": "fullName",
+              "value": "Công ty",
+              "description": "tên cá nhân or DN",
+              "disabled": true
+            },
+            {
+              "key": "lnFromDate",
+              "value": "01/08/2025",
+              "description": "ngày bắt đầu giải ngân"
+            },
+            {
+              "key": "lnToDate",
+              "value": "01/12/2025",
+              "description": "ngày kết thúc giải ngân"
+            },
+            {
+              "key": "crFromDate",
+              "value": "01/08/2025",
+              "description": "ngày bắt đầu tạo hồ sơ",
+              "disabled": true
+            },
+            {
+              "key": "crToDate",
+              "value": "01/12/2025",
+              "description": "ngày kết thúc tạo hồ sơ",
+              "disabled": true
+            },
+            {
+              "key": "loanAmount",
+              "value": "1000000000",
+              "description": "số tiền giải ngân",
+              "disabled": true
+            },
+            {
+              "key": "mobile",
+              "value": "0953224546",
+              "description": "số điện thoại",
+              "disabled": true
+            },
+            {
+              "key": "idNumber",
+              "value": "00012889956",
+              "description": "số giấy tờ",
+              "disabled": true
+            },
+            {
+              "key": "documentNo",
+              "value": "test_3010",
+              "description": "số hợp đồng",
+              "disabled": true
+            },
+            {
+              "key": "saleId",
+              "value": "",
+              "description": "id sale",
+              "disabled": true
+            },
+            {
+              "key": "lcClass",
+              "value": "B0",
+              "description": "nhóm nợ",
+              "disabled": true
+            },
+            {
+              "key": "status",
+              "value": "8",
+              "description": "trạng thái hồ sơ",
+              "type": "text",
+              "disabled": true
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "danh sách hồ sơ vay _ V1",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ2YW5oYW5odGVzdCIsImlhdCI6MTc3MjY4MDgxOSwiZXhwIjoxNzcyNzY3MjE5fQ.iFskV7XGaNNSpWaacTZ8GvOBZKYnlLBq_dQZGhlddqpJDPi0Z9Orfs3Ib1SJQDfeAmk6j3i6FbfbEYTkOXnk1g",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{url}}/api/v1/get-list-loan-registration?page=1&pageSize=100&id=&custId=&status=1,2&saleId=&regFromDate=03/01/2026&regToDate=04/03/2026&fullName&mobile&idNumber",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "get-list-loan-registration"
+          ],
+          "query": [
+            {
+              "key": "page",
+              "value": "1"
+            },
+            {
+              "key": "pageSize",
+              "value": "100"
+            },
+            {
+              "key": "id",
+              "value": "",
+              "description": "mã hồ sơ vay"
+            },
+            {
+              "key": "custId",
+              "value": "",
+              "description": "mã khách hàng"
+            },
+            {
+              "key": "status",
+              "value": "1,2",
+              "description": "trạng thái hồ sơ"
+            },
+            {
+              "key": "saleId",
+              "value": "",
+              "description": "mã sale"
+            },
+            {
+              "key": "regFromDate",
+              "value": "03/01/2026",
+              "description": "ngày bắt đầu"
+            },
+            {
+              "key": "regToDate",
+              "value": "04/03/2026",
+              "description": "ngày kết thúc"
+            },
+            {
+              "key": "fullName",
+              "value": null,
+              "description": "tên KH"
+            },
+            {
+              "key": "mobile",
+              "value": null,
+              "description": "số điện thoại"
+            },
+            {
+              "key": "idNumber",
+              "value": null,
+              "description": "số giấy tờ"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "danh sách hồ sơ vay _ excel",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ2YW5oYW5odGVzdCIsImlhdCI6MTc3MzA0OTA0MiwiZXhwIjoxNzczMTM1NDQyfQ.kgIdpKRIFJNk9KUE5Vt4s8OCbun7BYqATg7_QFa48e3dBj1Erh-5QPwaJZAOVeIJshKUJh0Gx9sqfFE4pcpjUw",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{url}}/api/v1/loanRegistration-export-excel?id=&custId=&saleId=&regFromDate=03/01/2026&regToDate=04/03/2026&fullName&mobile&idNumber",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "loanRegistration-export-excel"
+          ],
+          "query": [
+            {
+              "key": "id",
+              "value": "",
+              "description": "mã hồ sơ vay"
+            },
+            {
+              "key": "custId",
+              "value": "",
+              "description": "mã khách hàng"
+            },
+            {
+              "key": "status",
+              "value": "1,2",
+              "description": "trạng thái hồ sơ",
+              "disabled": true
+            },
+            {
+              "key": "saleId",
+              "value": "",
+              "description": "mã sale"
+            },
+            {
+              "key": "regFromDate",
+              "value": "03/01/2026",
+              "description": "ngày bắt đầu"
+            },
+            {
+              "key": "regToDate",
+              "value": "04/03/2026",
+              "description": "ngày kết thúc"
+            },
+            {
+              "key": "fullName",
+              "value": null,
+              "description": "tên KH"
+            },
+            {
+              "key": "mobile",
+              "value": null,
+              "description": "số điện thoại"
+            },
+            {
+              "key": "idNumber",
+              "value": null,
+              "description": "số giấy tờ"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "getToken",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"username\" : \"vanhanhtest\",\r\n    \"password\" : \"123456@@\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://apitest.finy.vn/authentication/token",
+          "protocol": "https",
+          "host": [
+            "apitest",
+            "finy",
+            "vn"
+          ],
+          "path": [
+            "authentication",
+            "token"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Danh sách trạng thái hồ sơ",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ2YW5oYW5odGVzdCIsImlhdCI6MTc3MjYxMDcwNSwiZXhwIjoxNzcyNjk3MTA1fQ.CEwYSp4x6uUMh5lvgrbhfyJYYm94EZ4a2EmqivGA6HuLac_nHbCp4oeN5TxACBw5bUekFXF1QIDchLFnBF71xw",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{url}}/api/get-all-code-regStatus",
+          "host": [
+            "{{url}}"
+          ],
+          "path": [
+            "api",
+            "get-all-code-regStatus"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
